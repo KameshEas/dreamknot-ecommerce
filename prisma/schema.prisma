@@ -1,0 +1,284 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  name          String
+  email         String   @unique
+  password_hash String
+  phone         String?
+  avatar        String?
+  date_of_birth DateTime?
+  gender        String?
+  bio           String?
+  preferences   String?  // JSON string for user preferences
+  email_notifications Boolean @default(true)
+  sms_notifications   Boolean @default(false)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  // Relations
+  carts      Cart[]
+  orders     Order[]
+  addresses  Address[]
+  wishlists  Wishlist[]
+  reviews    Review[]
+  referral_codes ReferralCode[]
+  referrals   Referral[]    @relation("ReferredUser")
+
+  @@map("users")
+}
+
+model Category {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  created_at DateTime @default(now())
+
+  // Relations
+  products Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id                Int      @id @default(autoincrement())
+  title             String
+  description       String
+  base_price        Float
+  category_id       Int
+  images            String[] // Array of image URLs
+  created_at        DateTime @default(now())
+
+  // Relations
+  category          Category              @relation(fields: [category_id], references: [id])
+  customizations    ProductCustomization[]
+  cart_items        CartItem[]
+  order_items       OrderItem[]
+  wishlists         Wishlist[]
+  reviews           Review[]
+
+  @@map("products")
+}
+
+model ProductCustomization {
+  id                 Int    @id @default(autoincrement())
+  product_id         Int
+  customization_type String
+  metadata           String // JSON string
+
+  // Relations
+  product Product @relation(fields: [product_id], references: [id])
+
+  @@map("product_customizations")
+}
+
+model Address {
+  id            Int    @id @default(autoincrement())
+  user_id       Int
+  name          String
+  address_line  String
+  city          String
+  state         String
+  zip           String
+  country       String
+  is_default    Boolean @default(false)
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id])
+
+  @@map("addresses")
+}
+
+model Cart {
+  id         Int      @id @default(autoincrement())
+  user_id    Int?
+  session_id String?  // For guest carts
+  created_at DateTime @default(now())
+
+  // Relations
+  user       User?      @relation(fields: [user_id], references: [id])
+  cart_items CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id             Int     @id @default(autoincrement())
+  cart_id        Int
+  product_id     Int
+  customization  String? // JSON string
+  qty            Int     @default(1)
+
+  // Relations
+  cart    Cart    @relation(fields: [cart_id], references: [id])
+  product Product @relation(fields: [product_id], references: [id])
+
+  @@map("cart_items")
+}
+
+model Order {
+  id               Int      @id @default(autoincrement())
+  user_id          Int
+  discount_code_id Int?
+  discount_amount  Float?   @default(0)
+  total_amount     Float
+  payment_status   String   @default("pending") // pending, paid, failed
+  order_status     String   @default("pending") // pending, processing, in_production, shipped, delivered, cancelled
+  shipping_address String   // JSON string
+  billing_address  String   // JSON string
+  created_at       DateTime @default(now())
+
+  // Relations
+  user        User         @relation(fields: [user_id], references: [id])
+  discount_code DiscountCode? @relation(fields: [discount_code_id], references: [id])
+  order_items OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id                Int     @id @default(autoincrement())
+  order_id          Int
+  product_id        Int
+  customization_json String? // JSON string
+  qty                Int
+  price              Float   // Price at time of order
+
+  // Relations
+  order   Order   @relation(fields: [order_id], references: [id])
+  product Product @relation(fields: [product_id], references: [id])
+
+  @@map("order_items")
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  product_id Int
+  rating     Int      // 1-5 stars
+  title      String?
+  comment    String?
+  is_verified Boolean @default(false) // Verified purchase
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  user    User    @relation(fields: [user_id], references: [id])
+  product Product @relation(fields: [product_id], references: [id])
+
+  @@map("reviews")
+}
+
+model DiscountCode {
+  id                Int       @id @default(autoincrement())
+  code              String    @unique
+  description       String?
+  discount_type      String    // 'percentage' or 'fixed'
+  discount_value     Float
+  minimum_order     Float?    @default(0)
+  maximum_discount  Float?
+  usage_limit       Int?
+  usage_count       Int       @default(0)
+  valid_from        DateTime?
+  valid_until       DateTime?
+  is_active         Boolean   @default(true)
+  applicable_products String? // JSON array of product IDs, null means all products
+  applicable_categories String? // JSON array of category IDs, null means all categories
+  created_at        DateTime  @default(now())
+
+  // Relations
+  orders Order[]
+  campaigns PromotionalCampaign[] @relation("CampaignDiscountCode")
+
+  @@map("discount_codes")
+}
+
+model PromotionalCampaign {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  banner_image String?
+  banner_text String?
+  discount_code_id Int?
+  is_active   Boolean  @default(true)
+  start_date  DateTime?
+  end_date    DateTime?
+  priority    Int      @default(0) // Higher priority campaigns show first
+  target_url  String?
+  created_at  DateTime @default(now())
+
+  // Relations
+  discount_code DiscountCode? @relation(fields: [discount_code_id], references: [id], name: "CampaignDiscountCode")
+
+  @@map("promotional_campaigns")
+}
+
+model EmailSubscriber {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  name       String?
+  preferences String? // JSON string for email preferences
+  is_active  Boolean  @default(true)
+  subscribed_at DateTime @default(now())
+  unsubscribed_at DateTime?
+
+  @@map("email_subscribers")
+}
+
+model ReferralCode {
+  id            Int      @id @default(autoincrement())
+  code          String   @unique
+  user_id       Int
+  reward_type   String   // 'percentage' or 'fixed'
+  reward_value  Float
+  usage_limit   Int?     @default(10)
+  usage_count   Int      @default(0)
+  is_active     Boolean  @default(true)
+  expires_at    DateTime?
+  created_at    DateTime @default(now())
+
+  // Relations
+  user          User     @relation(fields: [user_id], references: [id])
+  referrals     Referral[]
+
+  @@map("referral_codes")
+}
+
+model Referral {
+  id                Int      @id @default(autoincrement())
+  referral_code_id  Int
+  referred_user_id  Int?
+  referred_email    String
+  reward_earned     Boolean  @default(false)
+  reward_amount     Float?
+  status            String   @default("pending") // pending, completed, expired
+  created_at        DateTime @default(now())
+  completed_at      DateTime?
+
+  // Relations
+  referral_code     ReferralCode @relation(fields: [referral_code_id], references: [id])
+  referred_user     User?        @relation(fields: [referred_user_id], references: [id], name: "ReferredUser")
+
+  @@map("referrals")
+}
+
+model Wishlist {
+  id         Int @id @default(autoincrement())
+  user_id    Int
+  product_id Int
+
+  // Relations
+  user    User    @relation(fields: [user_id], references: [id])
+  product Product @relation(fields: [product_id], references: [id])
+
+  @@unique([user_id, product_id])
+  @@map("wishlists")
+}
