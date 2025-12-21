@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import Head from 'next/head'
+import Script from 'next/script'
 
 interface CartItem {
   id: number
@@ -66,6 +66,24 @@ export default function CheckoutPage() {
     }
   }, [shippingAddress, sameAsShipping])
 
+  // Load Razorpay SDK
+  useEffect(() => {
+    const loadRazorpay = async () => {
+      if (!(window as any).Razorpay) {
+        const script = document.createElement('script')
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+        script.async = true
+        document.body.appendChild(script)
+
+        return new Promise((resolve) => {
+          script.onload = resolve
+        })
+      }
+    }
+
+    loadRazorpay()
+  }, [])
+
   const fetchCart = async () => {
     try {
       const response = await fetch('/api/cart')
@@ -116,6 +134,13 @@ export default function CheckoutPage() {
 
       const orderData = await orderResponse.json()
 
+      // Check if Razorpay is loaded
+      if (!(window as any).Razorpay) {
+        alert('Razorpay SDK not loaded. Please refresh the page and try again.')
+        setProcessing(false)
+        return
+      }
+
       // Initialize RazorPay checkout
       const options = {
         key: orderData.key,
@@ -155,6 +180,11 @@ export default function CheckoutPage() {
             setProcessing(false)
           }
         },
+        modal: {
+          ondismiss: function() {
+            setProcessing(false)
+          }
+        },
         prefill: {
           name: shippingAddress.name,
           email: '', // You might want to get this from user profile
@@ -165,8 +195,14 @@ export default function CheckoutPage() {
         }
       }
 
-      const rzp = new (window as any).Razorpay(options)
-      rzp.open()
+      try {
+        const rzp = new (window as any).Razorpay(options)
+        rzp.open()
+      } catch (razorpayError) {
+        console.error('Razorpay initialization error:', razorpayError)
+        alert('Failed to initialize payment gateway. Please try again.')
+        setProcessing(false)
+      }
     } catch (error) {
       console.error('Place order error:', error)
       alert('Failed to initiate payment')
@@ -183,11 +219,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <>
-      <Head>
-        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-      </Head>
-      <div className="min-h-screen bg-off-white">
+    <div className="min-h-screen bg-off-white">
         {/* Header */}
       <header className="bg-navy text-white py-4">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
@@ -407,7 +439,6 @@ export default function CheckoutPage() {
           <p className="font-playfair">&copy; 2025 DreamKnot. All rights reserved.</p>
         </div>
       </footer>
-      </div>
-    </>
+    </div>
   )
 }

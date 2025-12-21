@@ -233,9 +233,9 @@ export async function sendOrderStatusUpdateEmail(orderId: number, customerEmail:
           <div style="background: linear-gradient(135deg, #19325C 0%, #2D4A7A 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
             <h3 style="margin: 0 0 15px 0;">What's Next?</h3>
             <ul style="margin: 0; padding-left: 20px;">
-              ${newStatus === 'shipped' ? '<li style="margin-bottom: 8px;">Track your package with the tracking number we'll send separately</li>' : ''}
-              ${newStatus === 'in_production' ? '<li style="margin-bottom: 8px;">Your personalized items are being carefully crafted</li>' : ''}
-              ${newStatus === 'processing' ? '<li style="margin-bottom: 8px;">Our team is preparing your order for production</li>' : ''}
+              ${newStatus === 'shipped' ? "<li style=\"margin-bottom: 8px;\">Track your package with the tracking number we'll send separately</li>" : ''}
+              ${newStatus === 'in_production' ? "<li style=\"margin-bottom: 8px;\">Your personalized items are being carefully crafted</li>" : ''}
+              ${newStatus === 'processing' ? "<li style=\"margin-bottom: 8px;\">Our team is preparing your order for production</li>" : ''}
               <li style="margin-bottom: 0;">Check your order status anytime in your account</li>
             </ul>
           </div>
@@ -272,3 +272,4 @@ export async function sendOrderStatusUpdateEmail(orderId: number, customerEmail:
     console.error('Failed to send order status update email:', error)
     return false
   }
+}
