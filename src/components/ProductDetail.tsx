@@ -150,11 +150,13 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           <div className="space-y-8">
             {/* Header */}
             <div>
-              <div className="flex items-center space-x-3 mb-3">
-                <span className="px-3 py-1 bg-gray-100 text-navy font-playfair text-xs font-medium rounded-full">
-                  {product.category.name}
-                </span>
-              </div>
+              {product.category && (
+                <div className="flex items-center space-x-3 mb-3">
+                  <span className="px-3 py-1 bg-gray-100 text-navy font-playfair text-xs font-medium rounded-full">
+                    {product.category.name}
+                  </span>
+                </div>
+              )}
               <h1 className="text-4xl font-great-vibes text-navy mb-4 leading-tight">
                 {product.title}
               </h1>

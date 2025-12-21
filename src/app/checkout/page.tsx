@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import Head from 'next/head'
 
 interface CartItem {
   id: number
@@ -98,28 +99,77 @@ export default function CheckoutPage() {
     setProcessing(true)
 
     try {
-      const response = await fetch('/api/orders', {
+      // Create RazorPay order
+      const orderResponse = await fetch('/api/orders/create-payment-order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          shipping_address: shippingAddress,
-          billing_address: billingAddress
-        })
+        }
       })
 
-      if (response.ok) {
-        const data = await response.json()
-        router.push(`/order-confirmation/${data.order.id}`)
-      } else {
-        const error = await response.json()
-        alert(`Error: ${error.error}`)
+      if (!orderResponse.ok) {
+        const error = await orderResponse.json()
+        alert(`Error creating payment order: ${error.error}`)
+        setProcessing(false)
+        return
       }
+
+      const orderData = await orderResponse.json()
+
+      // Initialize RazorPay checkout
+      const options = {
+        key: orderData.key,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        order_id: orderData.orderId,
+        name: 'DreamKnot',
+        description: 'Purchase from DreamKnot',
+        handler: async function (response: any) {
+          // Payment successful, verify and create order
+          try {
+            const verifyResponse = await fetch('/api/orders/verify-payment', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                shipping_address: shippingAddress,
+                billing_address: billingAddress
+              })
+            })
+
+            if (verifyResponse.ok) {
+              const data = await verifyResponse.json()
+              router.push(`/order-confirmation/${data.order.id}`)
+            } else {
+              const error = await verifyResponse.json()
+              alert(`Payment verification failed: ${error.error}`)
+            }
+          } catch (error) {
+            console.error('Payment verification error:', error)
+            alert('Payment verification failed')
+          } finally {
+            setProcessing(false)
+          }
+        },
+        prefill: {
+          name: shippingAddress.name,
+          email: '', // You might want to get this from user profile
+          contact: '' // You might want to get this from user profile
+        },
+        theme: {
+          color: '#1e3a8a' // Navy color
+        }
+      }
+
+      const rzp = new (window as any).Razorpay(options)
+      rzp.open()
     } catch (error) {
       console.error('Place order error:', error)
-      alert('Failed to place order')
-    } finally {
+      alert('Failed to initiate payment')
       setProcessing(false)
     }
   }
@@ -133,8 +183,12 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-off-white">
-      {/* Header */}
+    <>
+      <Head>
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+      </Head>
+      <div className="min-h-screen bg-off-white">
+        {/* Header */}
       <header className="bg-navy text-white py-4">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
           <h1 className="text-3xl font-great-vibes">DreamKnot</h1>
@@ -353,6 +407,7 @@ export default function CheckoutPage() {
           <p className="font-playfair">&copy; 2025 DreamKnot. All rights reserved.</p>
         </div>
       </footer>
-    </div>
+      </div>
+    </>
   )
 }

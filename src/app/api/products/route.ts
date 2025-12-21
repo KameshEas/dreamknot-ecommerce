@@ -1,7 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
+const STRAPI_URL = process.env.STRAPI_URL || 'http://localhost:1337'
+const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN
+
+export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search')
@@ -12,70 +14,93 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '12')
 
-    // Build where clause
-    const where: any = {}
+    // Build Strapi query parameters
+    const params = new URLSearchParams()
+
+    // Populate relations
+    params.append('populate[category]', 'true')
+    params.append('populate[images]', 'true')
 
     // Search functionality
     if (search) {
-      where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } }
-      ]
+      params.append('filters[$or][0][title][$containsi]', search)
+      params.append('filters[$or][1][description][$containsi]', search)
     }
 
     // Category filter
     if (categoryId) {
-      where.category_id = parseInt(categoryId)
+      params.append('filters[category][id][$eq]', categoryId)
     }
 
     // Price range filter
-    if (minPrice || maxPrice) {
-      where.base_price = {}
-      if (minPrice) where.base_price.gte = parseFloat(minPrice)
-      if (maxPrice) where.base_price.lte = parseFloat(maxPrice)
+    if (minPrice) {
+      params.append('filters[base_price][$gte]', minPrice)
+    }
+    if (maxPrice) {
+      params.append('filters[base_price][$lte]', maxPrice)
     }
 
-    // Build orderBy clause
-    let orderBy: any = { created_at: 'desc' }
-
+    // Sorting
     switch (sortBy) {
       case 'price-low':
-        orderBy = { base_price: 'asc' }
+        params.append('sort', 'base_price:asc')
         break
       case 'price-high':
-        orderBy = { base_price: 'desc' }
+        params.append('sort', 'base_price:desc')
         break
       case 'name':
-        orderBy = { title: 'asc' }
+        params.append('sort', 'title:asc')
         break
       case 'newest':
       default:
-        orderBy = { created_at: 'desc' }
+        params.append('sort', 'createdAt:desc')
         break
     }
 
-    // Get total count for pagination
-    const total = await prisma.product.count({ where })
+    // Pagination
+    params.append('pagination[page]', page.toString())
+    params.append('pagination[pageSize]', limit.toString())
 
-    // Get products with pagination
-    const products = await prisma.product.findMany({
-      where,
-      include: {
-        category: true,
-        customizations: true
-      },
-      orderBy,
-      skip: (page - 1) * limit,
-      take: limit
+    // Fetch from Strapi
+    const response = await fetch(`${STRAPI_URL}/api/products?${params.toString()}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(STRAPI_API_TOKEN && { 'Authorization': `Bearer ${STRAPI_API_TOKEN}` })
+      }
     })
 
+    if (!response.ok) {
+      throw new Error(`Strapi API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    // Transform Strapi response to match expected format
+    const transformedProducts = data.data.map((item: any) => ({
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      base_price: parseFloat(item.base_price),
+      category_id: item.category?.id || null,
+      images: item.images?.map((img: any) => `${STRAPI_URL}${img.url}`) || [],
+      created_at: item.createdAt,
+      category: item.category ? {
+        id: item.category.id,
+        name: item.category.name,
+        created_at: item.category.createdAt
+      } : null,
+      customizations: [] // Will be handled separately if needed
+    }))
+
+    const pagination = data.meta.pagination
+
     return NextResponse.json({
-      products,
+      products: transformedProducts,
       pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit)
+        page: pagination.page,
+        limit: pagination.pageSize,
+        total: pagination.total,
+        pages: pagination.pageCount
       }
     })
   } catch (error) {

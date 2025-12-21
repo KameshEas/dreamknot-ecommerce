@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+
+const STRAPI_URL = process.env.STRAPI_URL || 'http://localhost:1337'
+const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN
 
 export async function GET(
   request: NextRequest,
@@ -13,16 +15,44 @@ export async function GET(
       return NextResponse.json({ error: 'Invalid product ID' }, { status: 400 })
     }
 
-    const product = await prisma.product.findUnique({
-      where: { id: productId },
-      include: {
-        category: true,
-        customizations: true
+    // Fetch from Strapi
+    const response = await fetch(`${STRAPI_URL}/api/products?filters[id]=${productId}&populate[category]=true&populate[images]=true`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(STRAPI_API_TOKEN && { 'Authorization': `Bearer ${STRAPI_API_TOKEN}` })
       }
     })
 
-    if (!product) {
+    if (!response.ok) {
+      if (response.status === 404) {
+        return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+      }
+      throw new Error(`Strapi API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    // Check if product exists
+    if (!data.data || data.data.length === 0) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+    }
+
+    // Transform Strapi response to match expected format
+    const item = data.data[0]
+    const product = {
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      base_price: parseFloat(item.base_price),
+      category_id: item.category?.id || null,
+      images: item.images?.map((img: any) => `${STRAPI_URL}${img.url}`) || [],
+      created_at: item.createdAt,
+      category: item.category ? {
+        id: item.category.id,
+        name: item.category.name,
+        created_at: item.category.createdAt
+      } : null,
+      customizations: [] // Will be handled separately if needed
     }
 
     return NextResponse.json({ product })

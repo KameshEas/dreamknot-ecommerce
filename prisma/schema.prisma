@@ -134,6 +134,8 @@ model Order {
   order_status     String   @default("pending") // pending, processing, in_production, shipped, delivered, cancelled
   shipping_address String   // JSON string
   billing_address  String   // JSON string
+  razorpay_order_id String?
+  razorpay_payment_id String?
   created_at       DateTime @default(now())
 
   // Relations

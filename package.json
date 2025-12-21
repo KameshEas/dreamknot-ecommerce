@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "prisma": "prisma"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.1.0",
@@ -20,11 +21,13 @@
     "nodemailer": "^7.0.11",
     "pg": "^8.16.3",
     "prisma": "^7.1.0",
+    "razorpay": "^2.9.6",
     "react": "19.2.1",
     "react-dom": "19.2.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/next": "^8.0.7",
     "@types/node": "^20",
     "@types/pg": "^8.16.0",
     "@types/react": "^19",
