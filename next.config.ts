@@ -1,22 +1,22 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
+
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-        port: '',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
       },
       {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '1337',
-        pathname: '/uploads/**',
+        protocol: "https",
+        hostname: "api.dreamknot.co.in",
+        pathname: "/uploads/**",
       },
     ],
-    unoptimized: process.env.NODE_ENV === 'development',
+    unoptimized: false,
   },
 };
 
