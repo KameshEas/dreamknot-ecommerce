@@ -13,7 +13,7 @@ RUN npm install
 # 5️⃣ Copy app source
 COPY . .
 
-# 6️⃣ Build Next.js
+# 6️⃣ Build Next.js (without sensitive environment variables)
 RUN npm run build
 
 # 7️⃣ Expose port
