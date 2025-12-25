@@ -48,7 +48,7 @@ export async function POST() {
     }
 
     // Calculate total (convert to paise for RazorPay - INR)
-    const total_amount = cart.cart_items.reduce((sum: number, item) => sum + (item.product.base_price * item.qty), 0)
+    const total_amount = cart.cart_items.reduce((sum: number, item: { product: { base_price: number }, qty: number }) => sum + (item.product.base_price * item.qty), 0)
     const amount_in_paise = Math.round(total_amount * 100) // RazorPay expects amount in paise
 
     // Create RazorPay order
