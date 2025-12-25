@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
 
     // Create order items
     await prisma.orderItem.createMany({
-      data: cart.cart_items.map(item => ({
+      data: cart.cart_items.map((item: { product_id: number, customization: string | null, qty: number, product: { base_price: number } }) => ({
         order_id: order.id,
         product_id: item.product_id,
         customization_json: item.customization,
