@@ -1,34 +1,27 @@
-# ---------- BUILD STAGE ----------
-FROM node:20-alpine AS builder
-
+# ---- deps ----
+FROM node:20-alpine AS deps
 WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci
 
-# Install deps
-COPY package.json ./
-RUN npm install
-
-# Copy source + configs
+# ---- build ----
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Prisma (safe dummy URL)
 RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate
-
-# Build Next.js (Tailwind runs HERE)
 RUN npm run build
 
-
-# ---------- RUNTIME STAGE ----------
+# ---- runner ----
 FROM node:20-alpine AS runner
-
 WORKDIR /app
 ENV NODE_ENV=production
 
-# Copy ONLY standalone output
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/next.config.* ./
 
 EXPOSE 3000
-
-# IMPORTANT: start standalone server directly
-CMD ["node", "server.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]
