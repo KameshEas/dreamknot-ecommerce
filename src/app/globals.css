@@ -47,19 +47,7 @@
   --font-playfair: 'Playfair Display', serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-light-gold: var(--color-light-gold);
-  --color-mid-gold: var(--color-mid-gold);
-  --color-deep-gold: var(--color-deep-gold);
-  --color-navy: var(--color-navy);
-  --color-white: var(--color-white);
-  --color-off-white: var(--color-off-white);
-  --color-dark-gray: var(--color-dark-gray);
-  --font-great-vibes: var(--font-great-vibes);
-  --font-playfair: var(--font-playfair);
-}
+
 
 body {
   background: var(--background);
