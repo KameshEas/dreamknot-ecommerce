@@ -44,7 +44,7 @@ export async function GET() {
       })
     }
 
-    const total = cart.cart_items.reduce((sum: number, item) => sum + (item.product.base_price * item.qty), 0)
+    const total = cart.cart_items.reduce((sum: number, item: { product: { base_price: number }, qty: number }) => sum + (item.product.base_price * item.qty), 0)
 
     return NextResponse.json({
       id: cart.id,
