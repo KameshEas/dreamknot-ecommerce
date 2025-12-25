@@ -19,9 +19,13 @@ interface Product {
 
 async function getProduct(id: string): Promise<Product | null> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001'}/api/products/${id}`, {
-      cache: 'no-store'
-    })
+    const baseUrl =
+      process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'
+
+    const res = await fetch(
+      `${baseUrl}/api/products/${id}?populate=*`,
+      { cache: 'no-store' }
+    )
 
     if (!res.ok) {
       return null
