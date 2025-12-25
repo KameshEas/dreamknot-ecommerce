@@ -50,7 +50,7 @@ export async function GET(
       stats: {
         total: stats._count.id,
         average: stats._avg.rating || 0,
-        distribution: ratingDistribution.reduce((acc, curr) => {
+        distribution: ratingDistribution.reduce((acc: Record<number, number>, curr) => {
           acc[curr.rating] = curr._count.rating
           return acc
         }, {} as Record<number, number>)
