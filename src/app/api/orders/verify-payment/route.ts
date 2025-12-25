@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
         totalAmount: order.total_amount,
         shippingAddress: shipping_address,
         billingAddress: billing_address,
-        items: cart.cart_items.map(item => ({
+        items: cart.cart_items.map((item: { product_id: number, customization: string | null, qty: number, product: { title: string, base_price: number } }) => ({
           product: item.product,
           customization_json: item.customization,
           qty: item.qty,
