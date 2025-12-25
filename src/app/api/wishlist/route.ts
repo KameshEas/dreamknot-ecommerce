@@ -37,7 +37,7 @@ export async function GET() {
     })
 
     return NextResponse.json({
-      wishlist: wishlist.map(item => ({
+      wishlist: wishlist.map((item: any) => ({
         id: item.id,
         product: item.product,
         added_at: item.id // Using id as timestamp for simplicity

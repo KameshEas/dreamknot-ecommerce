@@ -37,7 +37,7 @@ export async function GET() {
       orderBy: { created_at: 'desc' }
     })
 
-    const formattedOrders = orders.map(order => ({
+    const formattedOrders = orders.map((order: any) => ({
       id: order.id,
       total_amount: order.total_amount,
       order_status: order.order_status,
@@ -45,7 +45,7 @@ export async function GET() {
       shipping_address: JSON.parse(order.shipping_address),
       billing_address: JSON.parse(order.billing_address),
       created_at: order.created_at,
-      items: order.order_items.map(item => ({
+      items: order.order_items.map((item: any) => ({
         id: item.id,
         product: item.product,
         customization: item.customization_json,

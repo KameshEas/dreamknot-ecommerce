@@ -6,11 +6,6 @@ import { sendOrderConfirmationEmail, sendAdminOrderNotification } from '@/lib/em
 import Razorpay from 'razorpay'
 import { createHmac } from 'crypto'
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!
-})
-
 async function getUserFromToken() {
   const cookieStore = await cookies()
   const token = cookieStore.get('token')?.value
@@ -48,6 +43,12 @@ export async function POST(request: NextRequest) {
     if (!shipping_address || !billing_address) {
       return NextResponse.json({ error: 'Shipping and billing addresses required' }, { status: 400 })
     }
+
+    // Initialize RazorPay
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID!,
+      key_secret: process.env.RAZORPAY_KEY_SECRET!
+    })
 
     // Verify payment signature
     const sign = razorpay_order_id + '|' + razorpay_payment_id

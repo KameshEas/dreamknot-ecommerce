@@ -13,11 +13,11 @@ RUN npm install
 # 5️⃣ Copy app source
 COPY . .
 
-# 6️⃣ Build Next.js (without sensitive environment variables)
+# 7️⃣ Build Next.js (without sensitive environment variables)
 RUN npm run build
 
-# 7️⃣ Expose port
+# 8️⃣ Expose port
 EXPOSE 3000
 
-# 8️⃣ Start Next.js
+# 9️⃣ Start Next.js
 CMD ["npm", "run", "start"]
