@@ -11,8 +11,7 @@
     "prisma": "prisma"
   },
   "dependencies": {
-    "@prisma/adapter-pg": "^7.1.0",
-    "@prisma/client": "^7.1.0",
+    "@prisma/client": "6.16.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/nodemailer": "^7.0.4",
@@ -27,6 +26,7 @@
     "react-dom": "19.2.1"
   },
   "devDependencies": {
+    "prisma": "6.16.0",
     "@types/next": "^8.0.7",
     "@types/node": "^20",
     "@types/pg": "^8.16.0",
