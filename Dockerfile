@@ -13,6 +13,9 @@ RUN npm install
 # 5️⃣ Copy app source
 COPY . .
 
+# 6️⃣ Generate Prisma client
+RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate
+
 # 7️⃣ Build Next.js (without sensitive environment variables)
 RUN npm run build
 
