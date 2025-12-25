@@ -4,7 +4,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Install deps
-COPY package.json package-lock.json ./
+COPY package.json ./
 RUN npm install
 
 # Copy source + configs
