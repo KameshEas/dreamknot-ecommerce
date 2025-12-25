@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate total
-    const total_amount = cart.cart_items.reduce((sum, item) => sum + (item.product.base_price * item.qty), 0)
+    const total_amount = cart.cart_items.reduce((sum: number, item: { product: { base_price: number }, qty: number }) => sum + (item.product.base_price * item.qty), 0)
 
     // Create order
     const order = await prisma.order.create({
