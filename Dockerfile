@@ -1,26 +1,34 @@
-# 1️⃣ Base image
-FROM node:20-alpine
+# ---------- BUILD STAGE ----------
+FROM node:20-alpine AS builder
 
-# 2️⃣ Set working directory
 WORKDIR /app
 
-# 3️⃣ Copy package files
-COPY package.json package-lock.json* ./
-
-# 4️⃣ Install dependencies
+# Install deps
+COPY package.json package-lock.json ./
 RUN npm install
 
-# 5️⃣ Copy app source
+# Copy source + configs
 COPY . .
 
-# 6️⃣ Generate Prisma client
+# Prisma (safe dummy URL)
 RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate
 
-# 7️⃣ Build Next.js (without sensitive environment variables)
+# Build Next.js (Tailwind runs HERE)
 RUN npm run build
 
-# 8️⃣ Expose port
+
+# ---------- RUNTIME STAGE ----------
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+ENV NODE_ENV=production
+
+# Copy ONLY standalone output
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+
 EXPOSE 3000
 
-# 9️⃣ Start Next.js
-CMD ["npm", "run", "start"]
+# IMPORTANT: start standalone server directly
+CMD ["node", "server.js"]
