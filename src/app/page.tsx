@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import ProductGrid from '@/components/ProductGrid'
 import Header from '@/components/Header'
 
@@ -12,11 +13,12 @@ export default function Home() {
       <section className="relative py-16 md:py-24 overflow-hidden bg-gradient-to-br from-navy via-blue-900 to-navy">
         {/* Enhanced Background with multiple layers */}
         <div className="absolute inset-0 opacity-15" suppressHydrationWarning>
-          <img
+          <Image
             src="/hero-img.png"
             alt="Personalized gifts showcase"
-            className="w-full h-full object-cover object-center"
-            suppressHydrationWarning
+            fill
+            className="object-cover object-center"
+            priority
           />
         </div>
 

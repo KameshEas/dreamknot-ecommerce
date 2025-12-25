@@ -48,7 +48,7 @@ export async function GET() {
 
     return NextResponse.json({
       id: cart.id,
-      items: cart.cart_items.map(item => ({
+      items: cart.cart_items.map((item: { product: { base_price: number }, qty: number, id: number, customization: string | null }) => ({
         id: item.id,
         product: item.product,
         customization: item.customization,

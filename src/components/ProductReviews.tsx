@@ -42,7 +42,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
 
   useEffect(() => {
     fetchReviews()
-  }, [productId])
+  }, [productId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchReviews = async () => {
     try {

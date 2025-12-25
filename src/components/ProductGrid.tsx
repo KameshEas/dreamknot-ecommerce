@@ -39,7 +39,7 @@ export default function ProductGrid({ search, category, minPrice, maxPrice, sort
 
   useEffect(() => {
     fetchProducts()
-  }, [search, category, minPrice, maxPrice, sortBy])
+  }, [search, category, minPrice, maxPrice, sortBy]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchProducts = async () => {
     try {

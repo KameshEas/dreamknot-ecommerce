@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
@@ -23,7 +23,7 @@ async function getUserFromToken() {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const userId = await getUserFromToken()
 
