@@ -35,7 +35,7 @@ export default function LoginPage() {
       } else {
         setError(data.error || 'Login failed')
       }
-    } catch (err) {
+    } catch {
       setError('Network error. Please try again.')
     } finally {
       setLoading(false)
@@ -140,7 +140,7 @@ export default function LoginPage() {
 
           <div className="mt-8 text-center">
             <p className="text-gray-600 font-playfair">
-              Don't have an account?{' '}
+              {"Don't have an account?"}{' '}
               <Link href="/auth/signup" className="text-navy hover:text-gold-600 font-semibold transition-colors">
                 Sign up
               </Link>

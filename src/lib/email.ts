@@ -1,12 +1,21 @@
 import nodemailer from 'nodemailer'
 
+interface Address {
+  name: string
+  address_line: string
+  city: string
+  state: string
+  zip: string
+  country: string
+}
+
 interface OrderEmailData {
   orderId: number
   customerName: string
   customerEmail: string
   totalAmount: number
-  shippingAddress: any
-  billingAddress: any
+  shippingAddress: Address
+  billingAddress: Address
   items: Array<{
     product: { title: string }
     customization_json: string | null
@@ -26,7 +35,7 @@ const transporter = nodemailer.createTransport({
 })
 
 export async function sendOrderConfirmationEmail(data: OrderEmailData) {
-  const { orderId, customerName, customerEmail, totalAmount, shippingAddress, billingAddress, items } = data
+  const { orderId, customerName, customerEmail, totalAmount, shippingAddress, items } = data
 
   const orderItemsHtml = items.map(item => `
     <tr>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 interface User {
   id: number
@@ -17,24 +18,6 @@ export default function Header() {
   const [cartItemCount, setCartItemCount] = useState(0)
   const userMenuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
-
-  useEffect(() => {
-    checkAuthStatus()
-  }, [])
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        userMenuRef.current &&
-        !userMenuRef.current.contains(event.target as Node)
-      ) {
-        setShowUserMenu(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
 
   const checkAuthStatus = async () => {
     try {
@@ -56,7 +39,7 @@ export default function Header() {
         setUser(null)
         setCartItemCount(0)
       }
-    } catch (error) {
+    } catch {
       setIsLoggedIn(false)
       setUser(null)
       setCartItemCount(0)
@@ -74,10 +57,31 @@ export default function Header() {
         const data = await response.json()
         setCartItemCount(data.items?.length || 0)
       }
-    } catch (error) {
-      console.error('Cart count fetch error:', error)
+    } catch {
+      console.error('Cart count fetch error')
     }
   }
+
+  useEffect(() => {
+    const initAuth = async () => {
+      await checkAuthStatus()
+    }
+    initAuth()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target as Node)
+      ) {
+        setShowUserMenu(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const handleLogout = async () => {
     try {
@@ -111,10 +115,10 @@ export default function Header() {
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-deep-gold to-light-gold rounded-full animate-glow border-2 border-white shadow-lg"></div>
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-deep-gold to-light-gold rounded-full animate-float opacity-60"></div>
             </div>
-            <a href="/" className="text-2xl font-great-vibes text-navy hover:text-deep-gold transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 relative">
+            <Link href="/" className="text-2xl font-great-vibes text-navy hover:text-deep-gold transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 relative">
               DreamKnot
               <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-deep-gold to-light-gold group-hover:w-full transition-all duration-500"></div>
-            </a>
+            </Link>
           </div>
 
 

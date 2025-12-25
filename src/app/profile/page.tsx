@@ -14,7 +14,7 @@ interface UserProfile {
   date_of_birth?: string
   gender?: string
   bio?: string
-  preferences?: any
+  preferences?: Record<string, unknown>
   email_notifications: boolean
   sms_notifications: boolean
   created_at: string
@@ -477,7 +477,24 @@ export default function ProfilePage() {
 
               <div className="pt-6 border-t border-gray-100">
                 <button
-                  onClick={() => handleUpdateProfile({ preventDefault: () => {} } as any)}
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/user/profile', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                      })
+
+                      if (response.ok) {
+                        alert('Preferences updated successfully!')
+                      } else {
+                        alert('Failed to update preferences')
+                      }
+                    } catch (error) {
+                      console.error('Update preferences error:', error)
+                      alert('Failed to update preferences')
+                    }
+                  }}
                   className="px-6 py-3 bg-navy text-white font-playfair font-medium rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Save Preferences

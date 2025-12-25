@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import SearchFilters from '@/components/SearchFilters'
 import ProductGrid from '@/components/ProductGrid'
 import Header from '@/components/Header'
@@ -20,10 +21,6 @@ export default function ProductsPage() {
     sortBy: 'newest'
   })
 
-  useEffect(() => {
-    fetchCategories()
-  }, [])
-
   const fetchCategories = async () => {
     try {
       const response = await fetch('/api/categories')
@@ -35,6 +32,13 @@ export default function ProductsPage() {
       console.error('Categories fetch error:', error)
     }
   }
+
+  useEffect(() => {
+    const initCategories = async () => {
+      await fetchCategories()
+    }
+    initCategories()
+  }, [])
 
   const handleSearch = (newFilters: typeof filters) => {
     setFilters(newFilters)
@@ -93,7 +97,7 @@ export default function ProductsPage() {
 
             <div className="max-w-2xl mx-auto px-8">
               <h3 className="text-4xl md:text-5xl font-great-vibes text-navy mb-6 animate-fade-in">
-                Can't Find What You're Looking For?
+                {"Can't Find What You're Looking For?"}
               </h3>
               <p className="text-lg text-gray-600 font-playfair mb-8 leading-relaxed animate-slide-up" style={{ animationDelay: '0.2s' }}>
                 We can help customize any product to your specific needs. Contact us for custom orders and special requests.
@@ -155,10 +159,10 @@ export default function ProductsPage() {
             <div>
               <h3 className="font-playfair font-bold text-white mb-6 text-lg">Products</h3>
               <ul className="space-y-3 text-gray-300 font-playfair">
-                <li><a href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Mugs</a></li>
-                <li><a href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">T-Shirts</a></li>
-                <li><a href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Pillows</a></li>
-                <li><a href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Custom Items</a></li>
+                <li><Link href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Mugs</Link></li>
+                <li><Link href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">T-Shirts</Link></li>
+                <li><Link href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Pillows</Link></li>
+                <li><Link href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Custom Items</Link></li>
               </ul>
             </div>
 

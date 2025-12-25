@@ -9,7 +9,7 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET!
 })
 
-async function getUserFromToken(request: NextRequest) {
+async function getUserFromToken() {
   const cookieStore = await cookies()
   const token = cookieStore.get('token')?.value
 
@@ -25,7 +25,7 @@ async function getUserFromToken(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const userId = await getUserFromToken(request)
+    const userId = await getUserFromToken()
 
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

@@ -18,13 +18,22 @@ interface OrderItem {
   price: number
 }
 
+interface Address {
+  name: string
+  address_line: string
+  city: string
+  state: string
+  zip: string
+  country: string
+}
+
 interface Order {
   id: number
   total_amount: number
   order_status: string
   payment_status: string
-  shipping_address: any
-  billing_address: any
+  shipping_address: Address
+  billing_address: Address
   created_at: string
   items: OrderItem[]
 }

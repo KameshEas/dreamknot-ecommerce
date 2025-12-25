@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import Image from 'next/image'
+import Link from 'next/link'
 
 interface OrderItem {
   id: number
@@ -36,7 +36,7 @@ export default function OrderConfirmationPage() {
     if (orderId) {
       fetchOrder()
     }
-  }, [orderId])
+  }, [orderId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchOrder = async () => {
     try {
@@ -75,8 +75,8 @@ export default function OrderConfirmationPage() {
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
           <h1 className="text-3xl font-great-vibes">DreamKnot</h1>
           <nav className="space-x-6">
-            <a href="/" className="font-playfair hover:text-light-gold transition-colors">Home</a>
-            <a href="/cart" className="font-playfair hover:text-light-gold transition-colors">Cart</a>
+            <Link href="/" className="font-playfair hover:text-light-gold transition-colors">Home</Link>
+            <Link href="/cart" className="font-playfair hover:text-light-gold transition-colors">Cart</Link>
             <a href="#" className="font-playfair hover:text-light-gold transition-colors">Orders</a>
             <a href="#" className="font-playfair hover:text-light-gold transition-colors">Login</a>
           </nav>
@@ -96,7 +96,7 @@ export default function OrderConfirmationPage() {
           </h1>
 
           <p className="text-xl font-playfair text-dark-gray mb-6">
-            Thank you for your order. We're excited to create your personalized gifts!
+            {"Thank you for your order. We're excited to create your personalized gifts!"}
           </p>
 
           <div className="bg-light-gold bg-opacity-20 rounded-lg p-6 mb-8">
@@ -116,16 +116,16 @@ export default function OrderConfirmationPage() {
 
           <div className="text-center space-y-4">
             <p className="text-lg font-playfair text-dark-gray">
-              We'll send you an email confirmation and updates on your order status.
+              {"We'll send you an email confirmation and updates on your order status."}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
+              <Link
                 href="/"
                 className="px-6 py-3 bg-gradient-to-r from-light-gold to-deep-gold text-navy font-playfair font-bold rounded hover:opacity-90 transition-opacity"
               >
                 Continue Shopping
-              </a>
+              </Link>
               <a
                 href="#"
                 className="px-6 py-3 border-2 border-navy text-navy font-playfair font-bold rounded hover:bg-navy hover:text-white transition-colors"

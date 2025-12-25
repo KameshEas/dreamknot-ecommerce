@@ -175,8 +175,8 @@ export default function CartPage() {
                               <p className="text-sm text-deep-gold font-playfair font-medium mb-2">✨ Your Customization:</p>
                               <div className="bg-gradient-subtle px-4 py-3 rounded-xl border border-deep-gold/20">
                                 <p className="text-sm text-navy font-playfair italic">
-                                  "{JSON.parse(item.customization).text || 'Custom design'}"
-                                </p>
+                                  &quot;{JSON.parse(item.customization).text || "Custom design"}&quot;
+                                </p>          
                               </div>
                             </div>
                           )}

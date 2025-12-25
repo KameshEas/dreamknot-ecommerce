@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import Script from 'next/script'
+import Link from 'next/link'
 
 interface CartItem {
   id: number
@@ -33,6 +33,47 @@ interface Address {
   country: string
 }
 
+interface RazorpayResponse {
+  razorpay_order_id: string
+  razorpay_payment_id: string
+  razorpay_signature: string
+}
+
+interface RazorpayOptions {
+  key: string
+  amount: number
+  currency: string
+  order_id: string
+  name: string
+  description: string
+  handler: (response: RazorpayResponse) => void
+  modal: {
+    ondismiss: () => void
+  }
+  prefill: {
+    name: string
+    email: string
+    contact: string
+  }
+  theme: {
+    color: string
+  }
+}
+
+interface RazorpayInstance {
+  open: () => void
+}
+
+interface RazorpayConstructor {
+  new (options: RazorpayOptions): RazorpayInstance
+}
+
+declare global {
+  interface Window {
+    Razorpay?: RazorpayConstructor
+  }
+}
+
 export default function CheckoutPage() {
   const router = useRouter()
   const [cart, setCart] = useState<Cart>({ id: null, items: [], total: 0 })
@@ -58,7 +99,7 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     fetchCart()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (sameAsShipping) {
@@ -69,7 +110,7 @@ export default function CheckoutPage() {
   // Load Razorpay SDK
   useEffect(() => {
     const loadRazorpay = async () => {
-      if (!(window as any).Razorpay) {
+      if (!(window as Window & { Razorpay?: unknown }).Razorpay) {
         const script = document.createElement('script')
         script.src = 'https://checkout.razorpay.com/v1/checkout.js'
         script.async = true
@@ -135,7 +176,7 @@ export default function CheckoutPage() {
       const orderData = await orderResponse.json()
 
       // Check if Razorpay is loaded
-      if (!(window as any).Razorpay) {
+      if (!window.Razorpay) {
         alert('Razorpay SDK not loaded. Please refresh the page and try again.')
         setProcessing(false)
         return
@@ -149,7 +190,7 @@ export default function CheckoutPage() {
         order_id: orderData.orderId,
         name: 'DreamKnot',
         description: 'Purchase from DreamKnot',
-        handler: async function (response: any) {
+        handler: async function (response: RazorpayResponse) {
           // Payment successful, verify and create order
           try {
             const verifyResponse = await fetch('/api/orders/verify-payment', {
@@ -196,7 +237,7 @@ export default function CheckoutPage() {
       }
 
       try {
-        const rzp = new (window as any).Razorpay(options)
+        const rzp = new window.Razorpay!(options)
         rzp.open()
       } catch (razorpayError) {
         console.error('Razorpay initialization error:', razorpayError)
@@ -225,7 +266,7 @@ export default function CheckoutPage() {
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
           <h1 className="text-3xl font-great-vibes">DreamKnot</h1>
           <nav className="space-x-6">
-            <a href="/" className="font-playfair hover:text-light-gold transition-colors">Home</a>
+            <Link href="/" className="font-playfair hover:text-light-gold transition-colors">Home</Link>
             <a href="#" className="font-playfair hover:text-light-gold transition-colors">Products</a>
             <a href="#" className="font-playfair hover:text-light-gold transition-colors">About</a>
             <a href="#" className="font-playfair hover:text-light-gold transition-colors">Login</a>

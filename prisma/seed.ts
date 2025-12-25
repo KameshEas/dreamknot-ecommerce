@@ -10,17 +10,7 @@ async function main() {
     create: { name: "Mugs" },
   })
 
-  const tshirtCategory = await prisma.category.upsert({
-    where: { name: "T-Shirts" },
-    update: {},
-    create: { name: "T-Shirts" },
-  })
 
-  const pillowCategory = await prisma.category.upsert({
-    where: { name: "Pillows" },
-    update: {},
-    create: { name: "Pillows" },
-  })
 
   const mug1 = await prisma.product.upsert({
     where: { id: 1 },
@@ -32,20 +22,6 @@ async function main() {
       category_id: mugCategory.id,
       images: [
         "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400",
-      ],
-    },
-  })
-
-  const tshirt1 = await prisma.product.upsert({
-    where: { id: 2 },
-    update: {},
-    create: {
-      title: "Custom T-Shirt",
-      description: "Comfortable cotton t-shirt with your personal design.",
-      base_price: 24.99,
-      category_id: tshirtCategory.id,
-      images: [
-        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
       ],
     },
   })

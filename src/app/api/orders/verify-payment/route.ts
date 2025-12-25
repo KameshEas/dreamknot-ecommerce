@@ -4,13 +4,14 @@ import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
 import { sendOrderConfirmationEmail, sendAdminOrderNotification } from '@/lib/email'
 import Razorpay from 'razorpay'
+import { createHmac } from 'crypto'
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
   key_secret: process.env.RAZORPAY_KEY_SECRET!
 })
 
-async function getUserFromToken(request: NextRequest) {
+async function getUserFromToken() {
   const cookieStore = await cookies()
   const token = cookieStore.get('token')?.value
 
@@ -26,7 +27,7 @@ async function getUserFromToken(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const userId = await getUserFromToken(request)
+    const userId = await getUserFromToken()
 
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -50,8 +51,7 @@ export async function POST(request: NextRequest) {
 
     // Verify payment signature
     const sign = razorpay_order_id + '|' + razorpay_payment_id
-    const expectedSign = require('crypto')
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
+    const expectedSign = createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
       .update(sign.toString())
       .digest('hex')
 

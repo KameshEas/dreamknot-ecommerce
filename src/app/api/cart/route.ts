@@ -3,7 +3,7 @@ import { cookies } from 'next/headers'
 import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
 
-async function getUserFromToken(request: NextRequest) {
+async function getUserFromToken() {
   const cookieStore = await cookies()
   const token = cookieStore.get('token')?.value
 
@@ -17,9 +17,9 @@ async function getUserFromToken(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const userId = await getUserFromToken(request)
+    const userId = await getUserFromToken()
 
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const userId = await getUserFromToken(request)
+    const userId = await getUserFromToken()
 
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

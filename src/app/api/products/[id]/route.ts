@@ -3,6 +3,10 @@ import { NextRequest, NextResponse } from 'next/server'
 const STRAPI_URL = process.env.STRAPI_URL || 'http://localhost:1337'
 const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN
 
+interface StrapiImage {
+  url: string
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -45,7 +49,7 @@ export async function GET(
       description: item.description,
       base_price: parseFloat(item.base_price),
       category_id: item.category?.id || null,
-      images: item.images?.map((img: any) => `${STRAPI_URL}${img.url}`) || [],
+      images: item.images?.map((img: StrapiImage) => `${STRAPI_URL}${img.url}`) || [],
       created_at: item.createdAt,
       category: item.category ? {
         id: item.category.id,

@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import ProductGrid from '@/components/ProductGrid'
 import Header from '@/components/Header'
 
@@ -149,7 +150,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-playfair font-bold text-navy mb-3 group-hover:text-deep-gold transition-colors duration-300">Receive & Enjoy</h3>
               <p className="text-gray-600 font-playfair text-base leading-relaxed">
-                We'll craft and deliver your personalized gift with care and attention to detail.
+                {"We'll craft and deliver your personalized gift with care and attention to detail."}
               </p>
             </div>
           </div>
@@ -164,9 +165,9 @@ export default function Home() {
             <p className="text-base text-gray-600 font-playfair max-w-2xl mx-auto mb-8">
               Premium quality products ready for your personal touch
             </p>
-            <a href="/products" className="inline-block bg-navy text-white font-playfair font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+            <Link href="/products" className="inline-block bg-navy text-white font-playfair font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
               View All Products →
-            </a>
+            </Link>
           </div>
           <ProductGrid />
         </div>
@@ -185,7 +186,7 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-great-vibes text-navy mb-4 animate-fade-in">What Our Customers Say</h2>
             <p className="text-lg text-gray-600 font-playfair max-w-2xl mx-auto leading-relaxed">
-              Don't just take our word for it - hear from our satisfied customers
+              {"Don't just take our word for it - hear from our satisfied customers"}
             </p>
           </div>
 
@@ -212,7 +213,7 @@ export default function Home() {
               </div>
 
               <p className="text-gray-700 font-playfair italic text-base mb-6 leading-relaxed">
-                "The personalized mug I created for my dad was perfect. The quality exceeded my expectations and the customization process was incredibly smooth!"
+                {"The personalized mug I created for my dad was perfect. The quality exceeded my expectations and the customization process was incredibly smooth!"}
               </p>
 
               <div className="flex items-center space-x-3">
@@ -248,7 +249,7 @@ export default function Home() {
               </div>
 
               <p className="text-gray-700 font-playfair italic text-base mb-6 leading-relaxed">
-                "Easy to use and the results are amazing. My custom t-shirt arrived quickly and looked great. The entire experience was delightful!"
+                {"Easy to use and the results are amazing. My custom t-shirt arrived quickly and looked great. The entire experience was delightful!"}
               </p>
 
               <div className="flex items-center space-x-3">
@@ -284,7 +285,7 @@ export default function Home() {
               </div>
 
               <p className="text-gray-700 font-playfair italic text-base mb-6 leading-relaxed">
-                "The customization tools are intuitive and the final product was exactly what I envisioned. DreamKnot has made gifting so much more meaningful!"
+                {"The customization tools are intuitive and the final product was exactly what I envisioned. DreamKnot has made gifting so much more meaningful!"}
               </p>
 
               <div className="flex items-center space-x-3">
@@ -362,10 +363,10 @@ export default function Home() {
             <div>
               <h3 className="font-playfair font-bold text-white mb-6 text-lg">Products</h3>
               <ul className="space-y-3 text-gray-300 font-playfair">
-                <li><a href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Mugs</a></li>
-                <li><a href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">T-Shirts</a></li>
-                <li><a href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Pillows</a></li>
-                <li><a href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Custom Items</a></li>
+                <li><Link href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Mugs</Link></li>
+                <li><Link href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">T-Shirts</Link></li>
+                <li><Link href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Pillows</Link></li>
+                <li><Link href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Custom Items</Link></li>
               </ul>
             </div>
 

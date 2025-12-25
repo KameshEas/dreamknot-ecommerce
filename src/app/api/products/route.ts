@@ -3,6 +3,24 @@ import { NextResponse } from 'next/server'
 const STRAPI_URL = process.env.STRAPI_URL || 'http://localhost:1337'
 const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN
 
+interface StrapiImage {
+  url: string
+}
+
+interface StrapiProduct {
+  id: number
+  title: string
+  description: string
+  base_price: string
+  createdAt: string
+  category?: {
+    id: number
+    name: string
+    createdAt: string
+  }
+  images?: StrapiImage[]
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
@@ -76,13 +94,13 @@ export async function GET(request: Request) {
     const data = await response.json()
 
     // Transform Strapi response to match expected format
-    const transformedProducts = data.data.map((item: any) => ({
+    const transformedProducts = data.data.map((item: StrapiProduct) => ({
       id: item.id,
       title: item.title,
       description: item.description,
       base_price: parseFloat(item.base_price),
       category_id: item.category?.id || null,
-      images: item.images?.map((img: any) => `${STRAPI_URL}${img.url}`) || [],
+      images: item.images?.map((img: StrapiImage) => `${STRAPI_URL}${img.url}`) || [],
       created_at: item.createdAt,
       category: item.category ? {
         id: item.category.id,

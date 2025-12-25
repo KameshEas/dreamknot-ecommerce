@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
 import { sendOrderConfirmationEmail, sendAdminOrderNotification } from '@/lib/email'
 
-async function getUserFromToken(request: NextRequest) {
+async function getUserFromToken() {
   const cookieStore = await cookies()
   const token = cookieStore.get('token')?.value
 
@@ -20,7 +20,7 @@ async function getUserFromToken(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const userId = await getUserFromToken(request)
+    const userId = await getUserFromToken()
 
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

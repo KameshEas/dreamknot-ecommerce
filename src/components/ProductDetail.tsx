@@ -22,17 +22,19 @@ interface Product {
   }[]
 }
 
+type CustomizationValue = string | File | undefined
+
 interface ProductDetailProps {
   product: Product
 }
 
 export default function ProductDetail({ product }: ProductDetailProps) {
   const [selectedImage, setSelectedImage] = useState(0)
-  const [customizations, setCustomizations] = useState<Record<string, any>>({})
+  const [customizations, setCustomizations] = useState<Record<string, CustomizationValue>>({})
   const [quantity, setQuantity] = useState(1)
   const [isWishlisted, setIsWishlisted] = useState(false)
 
-  const handleCustomizationChange = (type: string, value: any) => {
+  const handleCustomizationChange = (type: string, value: CustomizationValue) => {
     setCustomizations(prev => ({
       ...prev,
       [type]: value
