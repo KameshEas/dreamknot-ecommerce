@@ -12,7 +12,7 @@ interface Product {
   images: string[]
   category: {
     name: string
-  }
+  } | null
 }
 
 interface ProductCardProps {
@@ -91,9 +91,11 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {/* Enhanced Category Badge with glassmorphism */}
         <div className="absolute top-4 left-4 z-10">
-          <span className="px-4 py-2 bg-white/90 backdrop-blur-md text-navy font-playfair text-xs font-semibold rounded-full shadow-lg border border-white/20 group-hover:bg-white/95 transition-all duration-300">
-            {product.category.name}
-          </span>
+          {product.category && (
+            <span className="px-4 py-2 bg-white/90 backdrop-blur-md text-navy font-playfair text-xs font-semibold rounded-full shadow-lg border border-white/20 group-hover:bg-white/95 transition-all duration-300">
+              {product.category.name}
+            </span>
+          )}
         </div>
 
         {/* Premium Wishlist Button with enhanced effects */}

@@ -11,6 +11,11 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
       {
+        protocol: "http",
+        hostname: "api.dreamknot.co.in",
+        pathname: "/uploads/**",
+      },
+      {
         protocol: "https",
         hostname: "api.dreamknot.co.in",
         pathname: "/uploads/**",

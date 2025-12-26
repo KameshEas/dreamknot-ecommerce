@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const STRAPI_URL = process.env.STRAPI_URL || 'http://localhost:1337'
+const STRAPI_URL = process.env.STRAPI_URL || 'http://api.dreamknot.co.in'
 const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN
 
 interface StrapiImage {
