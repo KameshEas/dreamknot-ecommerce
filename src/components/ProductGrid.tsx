@@ -36,6 +36,7 @@ export default function ProductGrid({ search, category, minPrice, maxPrice, sort
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
 
   useEffect(() => {
     fetchProducts()
@@ -66,10 +67,10 @@ export default function ProductGrid({ search, category, minPrice, maxPrice, sort
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {[...Array(8)].map((_, i) => (
-          <div key={i} className="bg-white rounded-2xl shadow-lg p-6 animate-pulse border border-gray-100">
-            <div className="w-full h-80 bg-gray-200 rounded-xl mb-4"></div>
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+        {[...Array(9)].map((_, i) => (
+          <div key={i} className="bg-white rounded-2xl shadow-sm p-6 animate-pulse border border-gray-100 hover-lift" style={{ animationDelay: `${i * 0.1}s` }}>
+            <div className="w-full h-96 bg-gray-200 rounded-xl mb-4"></div>
             <div className="space-y-3">
               <div className="h-5 bg-gray-200 rounded w-3/4"></div>
               <div className="h-4 bg-gray-200 rounded w-full"></div>
@@ -87,14 +88,34 @@ export default function ProductGrid({ search, category, minPrice, maxPrice, sort
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-500 font-playfair text-lg">Error loading products: {error}</p>
+      <div className="text-center py-12 px-4">
+        <div className="max-w-md mx-auto">
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-playfair text-navy mb-2">Products Temporarily Unavailable</h3>
+          <p className="text-gray-600 font-playfair text-sm mb-6">
+            {"We're working on getting your personalized products ready. Please check back soon!"}
+          </p>
+          <button
+            onClick={() => {
+              setError(null)
+              setRetryCount(prev => prev + 1)
+              fetchProducts()
+            }}
+            className="bg-navy text-white px-6 py-3 rounded-lg font-playfair text-sm hover:bg-blue-700 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
       {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}

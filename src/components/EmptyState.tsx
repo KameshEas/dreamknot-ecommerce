@@ -59,10 +59,10 @@ export default function EmptyState({
     switch (type) {
       case 'cart':
         return {
-          title: 'Your cart is empty',
-          description: 'Start creating personalized gifts that will bring joy to your loved ones. Browse our collection and add some magic to your cart.',
-          actionText: 'Explore Products',
-          actionHref: '/'
+          title: 'Your cart is waiting for amazing gifts',
+          description: 'Start creating a personalized gift they\'ll truly love. Preview before you buy • Easy edits • Fast delivery.',
+          actionText: 'Start Creating a Gift',
+          actionHref: '/products'
         }
       case 'wishlist':
         return {
@@ -108,6 +108,39 @@ export default function EmptyState({
   const finalActionText = actionText || content.actionText
   const finalActionHref = actionHref || content.actionHref
 
+  const getAdditionalContent = () => {
+    if (type === 'cart') {
+      return (
+        <div className="mt-12 text-center">
+          <p className="text-gray-600 font-playfair text-lg mb-6">
+            Not sure where to start? Popular gifts people love to personalize:
+          </p>
+          <div className="flex flex-wrap justify-center gap-4 mb-8">
+            <Link
+              href="/products?category=Mugs"
+              className="px-6 py-3 bg-white border-2 border-navy text-navy font-playfair font-semibold rounded-lg hover:bg-navy hover:text-white transition-all duration-300 transform hover:scale-105"
+            >
+              Personalized Mugs
+            </Link>
+            <Link
+              href="/products?category=T-Shirts"
+              className="px-6 py-3 bg-white border-2 border-navy text-navy font-playfair font-semibold rounded-lg hover:bg-navy hover:text-white transition-all duration-300 transform hover:scale-105"
+            >
+              Custom T-Shirts
+            </Link>
+            <Link
+              href="/gift-finder"
+              className="px-6 py-3 bg-white border-2 border-deep-gold text-deep-gold font-playfair font-semibold rounded-lg hover:bg-deep-gold hover:text-white transition-all duration-300 transform hover:scale-105"
+            >
+              Find a Gift They Love
+            </Link>
+          </div>
+        </div>
+      )
+    }
+    return null
+  }
+
   return (
     <div className="empty-state">
       <div className="empty-state-icon">
@@ -118,13 +151,14 @@ export default function EmptyState({
         {finalDescription}
       </p>
       {finalActionHref && (
-        <Link 
+        <Link
           href={finalActionHref}
           className="px-8 py-4 bg-navy text-white font-sans font-semibold rounded-lg hover:bg-blue-700 transition-colors transform hover:scale-105 touch-target"
         >
           {finalActionText}
         </Link>
       )}
+      {getAdditionalContent()}
     </div>
   )
 }

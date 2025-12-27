@@ -20,6 +20,16 @@ const nextConfig: NextConfig = {
         hostname: "api.dreamknot.co.in",
         pathname: "/uploads/**",
       },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "https",
+        hostname: "localhost",
+        pathname: "/uploads/**",
+      },
     ],
     unoptimized: false,
   },

@@ -9,7 +9,7 @@ interface Product {
   images: string[]
   category: {
     name: string
-  }
+  } | null
   customizations: {
     id: number
     customization_type: string
@@ -19,8 +19,12 @@ interface Product {
 
 async function getProduct(id: string): Promise<Product | null> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:3001'}/api/products/${id}`, {
-      cache: 'no-store'
+    const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://api.dreamknot.co.in'
+    const res = await fetch(`${strapiUrl}/api/products/${id}?populate[category]=true&populate[images]=true`, {
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      }
     })
 
     if (!res.ok) {
@@ -28,7 +32,29 @@ async function getProduct(id: string): Promise<Product | null> {
     }
 
     const data = await res.json()
-    return data.product
+
+    // Transform Strapi response to match expected format
+    const item = data.data
+    return {
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      base_price: parseFloat(item.base_price || '0'),
+      images: item.images?.map((img: { url: string }) => {
+        if (!img.url) return '/placeholder-product.jpg'
+        if (img.url.startsWith('http://') || img.url.startsWith('https://')) {
+          return img.url
+        } else if (img.url.startsWith('/uploads/')) {
+          return `${strapiUrl}${img.url}`
+        } else {
+          return `${strapiUrl}/uploads/${img.url}`
+        }
+      }) || ['/placeholder-product.jpg'],
+      category: item.category ? {
+        name: item.category.name
+      } : { name: 'General' },
+      customizations: []
+    }
   } catch (error) {
     console.error('Failed to fetch product:', error)
     return null

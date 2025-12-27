@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import Header from '@/components/Header'
 
 interface CartItem {
   id: number
@@ -74,9 +75,35 @@ declare global {
   }
 }
 
+interface OrderItem {
+  id: number
+  product: {
+    id: number
+    title: string
+    images: string[]
+  }
+  customization: string | null
+  qty: number
+  price: number
+}
+
+interface Order {
+  id: number
+  total_amount: number
+  order_status: string
+  shipping_address: string
+  billing_address: string
+  created_at: string
+  order_items: OrderItem[]
+}
+
+type CheckoutStep = 'cart' | 'checkout' | 'confirmation'
+
 export default function CheckoutPage() {
   const router = useRouter()
+  const [currentStep, setCurrentStep] = useState<CheckoutStep>('checkout')
   const [cart, setCart] = useState<Cart>({ id: null, items: [], total: 0 })
+  const [order, setOrder] = useState<Order | null>(null)
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState(false)
   const [shippingAddress, setShippingAddress] = useState<Address>({
@@ -209,15 +236,39 @@ export default function CheckoutPage() {
 
             if (verifyResponse.ok) {
               const data = await verifyResponse.json()
-              router.push(`/order-confirmation/${data.order.id}`)
+
+              // Create order object for confirmation step
+              const confirmedOrder: Order = {
+                id: data.order.id,
+                total_amount: cart.total,
+                order_status: 'processing',
+                shipping_address: JSON.stringify(shippingAddress),
+                billing_address: JSON.stringify(billingAddress),
+                created_at: new Date().toISOString(),
+                order_items: cart.items.map(item => ({
+                  id: item.id,
+                  product: {
+                    id: item.product.id,
+                    title: item.product.title,
+                    images: item.product.images
+                  },
+                  customization: item.customization,
+                  qty: item.qty,
+                  price: item.price
+                }))
+              }
+
+              setOrder(confirmedOrder)
+              setCurrentStep('confirmation')
+              setProcessing(false)
             } else {
               const error = await verifyResponse.json()
               alert(`Payment verification failed: ${error.error}`)
+              setProcessing(false)
             }
           } catch (error) {
             console.error('Payment verification error:', error)
             alert('Payment verification failed')
-          } finally {
             setProcessing(false)
           }
         },
@@ -254,232 +305,518 @@ export default function CheckoutPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-off-white flex items-center justify-center">
-        <div className="text-navy font-playfair text-xl">Loading checkout...</div>
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 bg-deep-gold/20 rounded-full flex items-center justify-center mx-auto">
+            <svg className="w-8 h-8 text-deep-gold animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </div>
+          <p className="text-navy font-playfair text-xl">Preparing your checkout...</p>
+        </div>
       </div>
     )
   }
 
   return (
     <div className="min-h-screen bg-off-white">
-        {/* Header */}
-      <header className="bg-navy text-white py-4">
-        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
-          <h1 className="text-3xl font-great-vibes">DreamKnot</h1>
-          <nav className="space-x-6">
-            <Link href="/" className="font-playfair hover:text-light-gold transition-colors">Home</Link>
-            <a href="#" className="font-playfair hover:text-light-gold transition-colors">Products</a>
-            <a href="#" className="font-playfair hover:text-light-gold transition-colors">About</a>
-            <a href="#" className="font-playfair hover:text-light-gold transition-colors">Login</a>
-          </nav>
+      {/* Header */}
+      <Header />
+
+      {/* Hero Section */}
+      <section className="pt-24 pb-16 px-4 bg-gradient-to-br from-off-white to-white">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-4xl lg:text-5xl font-playfair text-navy mb-6 leading-tight">
+            Almost There — Your Gift is Ready
+          </h1>
+          <p className="text-xl text-gray-600 font-playfair leading-relaxed mb-8">
+            Secure checkout in just a few steps. Preview before you buy • Easy edits • Fast delivery.
+          </p>
+          <div className="flex items-center justify-center space-x-8 text-sm text-gray-500 font-playfair">
+            <div className="flex items-center space-x-2">
+              <div className="w-6 h-6 bg-deep-gold rounded-full flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <span>Cart</span>
+            </div>
+            <div className="w-8 h-px bg-gray-300"></div>
+            <div className={`flex items-center space-x-2 ${currentStep === 'checkout' || currentStep === 'confirmation' ? 'text-navy' : ''}`}>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                currentStep === 'checkout' || currentStep === 'confirmation' ? 'bg-navy text-white' : 'bg-gray-200'
+              }`}>
+                {currentStep === 'checkout' || currentStep === 'confirmation' ? '✓' : '2'}
+              </div>
+              <span className={currentStep === 'checkout' || currentStep === 'confirmation' ? 'font-semibold' : ''}>Checkout</span>
+            </div>
+            <div className="w-8 h-px bg-gray-300"></div>
+            <div className={`flex items-center space-x-2 ${currentStep === 'confirmation' ? 'text-navy' : ''}`}>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                currentStep === 'confirmation' ? 'bg-deep-gold text-navy' : 'bg-gray-200'
+              }`}>
+                {currentStep === 'confirmation' ? '✓' : '3'}
+              </div>
+              <span className={currentStep === 'confirmation' ? 'font-semibold' : ''}>Confirmation</span>
+            </div>
+          </div>
         </div>
-      </header>
+      </section>
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <h1 className="text-4xl font-playfair font-bold text-navy mb-8">Checkout</h1>
+      <div className="max-w-7xl mx-auto px-4 pb-20">
+        <div className="grid lg:grid-cols-3 gap-12">
+          {/* Order Summary - Takes up 2 columns on large screens */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Order Items Preview */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+              <h2 className="text-2xl font-playfair text-navy mb-6">Your Order</h2>
+              <div className="space-y-6">
+                {cart.items.map((item) => (
+                  <div key={item.id} className="flex items-center space-x-6 p-4 bg-off-white rounded-xl">
+                    <div className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden">
+                      <Image
+                        src={item.product.images[0] || '/next.svg'}
+                        alt={item.product.title}
+                        fill
+                        className="object-cover"
+                        sizes="80px"
+                      />
+                    </div>
+                    <div className="flex-grow">
+                      <h3 className="font-playfair font-bold text-navy text-lg mb-1">{item.product.title}</h3>
+                      <p className="text-gray-600 font-playfair text-sm">Quantity: {item.qty}</p>
+                      {item.customization && (
+                        <p className="text-gray-500 font-playfair text-xs mt-1">
+                          Personalized: {JSON.parse(item.customization).text?.substring(0, 30) || 'Yes'}
+                        </p>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <p className="font-playfair font-bold text-navy text-xl">₹{item.price.toFixed(2)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Order Summary */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-playfair font-bold text-navy mb-6">Order Summary</h2>
-
-            <div className="space-y-4 mb-6">
-              {cart.items.map((item) => (
-                <div key={item.id} className="flex items-center space-x-4">
-                  <div className="relative w-16 h-16 flex-shrink-0">
-                    <Image
-                      src={item.product.images[0] || '/placeholder-product.jpg'}
-                      alt={item.product.title}
-                      fill
-                      className="object-cover rounded"
-                      sizes="64px"
-                    />
-                  </div>
-                  <div className="flex-grow">
-                    <h3 className="font-playfair font-bold text-navy">{item.product.title}</h3>
-                    <p className="text-sm text-dark-gray font-playfair">Qty: {item.qty}</p>
-                    {item.customization && (
-                      <p className="text-xs text-dark-gray">
-                        Custom: {JSON.parse(item.customization).text?.substring(0, 20) || 'Yes'}
-                      </p>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <p className="font-playfair font-bold text-navy">₹{item.price.toFixed(2)}</p>
-                  </div>
+              {/* Order Total */}
+              <div className="mt-8 pt-6 border-t border-gray-200">
+                <div className="flex justify-between items-center">
+                  <span className="text-2xl font-playfair text-navy">Total</span>
+                  <span className="text-3xl font-playfair font-bold text-navy">₹{cart.total.toFixed(2)}</span>
                 </div>
-              ))}
+                <p className="text-sm text-gray-500 font-playfair mt-2">Includes all taxes and shipping</p>
+              </div>
             </div>
 
-            <div className="border-t pt-4">
-              <div className="flex justify-between items-center">
-                <span className="text-xl font-playfair font-bold text-navy">Total:</span>
-                <span className="text-2xl font-playfair font-bold text-navy">₹{cart.total.toFixed(2)}</span>
+            {/* Trust Signals */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+              <h3 className="text-xl font-playfair text-navy mb-6">Why Choose DreamKnot?</h3>
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="text-center space-y-3">
+                  <div className="w-12 h-12 bg-deep-gold/10 rounded-full flex items-center justify-center mx-auto">
+                    <svg className="w-6 h-6 text-deep-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                  </div>
+                  <h4 className="font-playfair font-semibold text-navy">Premium Quality</h4>
+                  <p className="text-sm text-gray-600 font-playfair">Every gift is carefully crafted with attention to detail</p>
+                </div>
+                <div className="text-center space-y-3">
+                  <div className="w-12 h-12 bg-deep-gold/10 rounded-full flex items-center justify-center mx-auto">
+                    <svg className="w-6 h-6 text-deep-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <h4 className="font-playfair font-semibold text-navy">Preview First</h4>
+                  <p className="text-sm text-gray-600 font-playfair">See exactly how your gift looks before checkout</p>
+                </div>
+                <div className="text-center space-y-3">
+                  <div className="w-12 h-12 bg-deep-gold/10 rounded-full flex items-center justify-center mx-auto">
+                    <svg className="w-6 h-6 text-deep-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <h4 className="font-playfair font-semibold text-navy">Fast Delivery</h4>
+                  <p className="text-sm text-gray-600 font-playfair">Expedited production and premium shipping</p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Shipping & Billing */}
-          <div className="space-y-6">
+          {/* Checkout Form - Takes up 1 column on large screens */}
+          <div className="space-y-8">
             {/* Shipping Address */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-playfair font-bold text-navy mb-6">Shipping Address</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-playfair font-bold text-navy mb-2">Full Name</label>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-8 h-8 bg-navy rounded-full flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-playfair text-navy">Shipping Address</h2>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-playfair font-semibold text-navy mb-2">Full Name</label>
                   <input
                     type="text"
                     value={shippingAddress.name}
                     onChange={(e) => setShippingAddress(prev => ({ ...prev, name: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 rounded font-playfair focus:outline-none focus:ring-2 focus:ring-light-gold"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
+                    placeholder="Enter your full name"
                     required
                   />
                 </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-playfair font-bold text-navy mb-2">Address Line</label>
+
+                <div>
+                  <label className="block text-sm font-playfair font-semibold text-navy mb-2">Address Line</label>
                   <input
                     type="text"
                     value={shippingAddress.address_line}
                     onChange={(e) => setShippingAddress(prev => ({ ...prev, address_line: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 rounded font-playfair focus:outline-none focus:ring-2 focus:ring-light-gold"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
+                    placeholder="Street address, apartment, etc."
                     required
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-playfair font-bold text-navy mb-2">City</label>
-                  <input
-                    type="text"
-                    value={shippingAddress.city}
-                    onChange={(e) => setShippingAddress(prev => ({ ...prev, city: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 rounded font-playfair focus:outline-none focus:ring-2 focus:ring-light-gold"
-                    required
-                  />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-playfair font-semibold text-navy mb-2">City</label>
+                    <input
+                      type="text"
+                      value={shippingAddress.city}
+                      onChange={(e) => setShippingAddress(prev => ({ ...prev, city: e.target.value }))}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
+                      placeholder="City"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-playfair font-semibold text-navy mb-2">State</label>
+                    <input
+                      type="text"
+                      value={shippingAddress.state}
+                      onChange={(e) => setShippingAddress(prev => ({ ...prev, state: e.target.value }))}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
+                      placeholder="State"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-playfair font-bold text-navy mb-2">State</label>
-                  <input
-                    type="text"
-                    value={shippingAddress.state}
-                    onChange={(e) => setShippingAddress(prev => ({ ...prev, state: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 rounded font-playfair focus:outline-none focus:ring-2 focus:ring-light-gold"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-playfair font-bold text-navy mb-2">ZIP Code</label>
-                  <input
-                    type="text"
-                    value={shippingAddress.zip}
-                    onChange={(e) => setShippingAddress(prev => ({ ...prev, zip: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 rounded font-playfair focus:outline-none focus:ring-2 focus:ring-light-gold"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-playfair font-bold text-navy mb-2">Country</label>
-                  <input
-                    type="text"
-                    value={shippingAddress.country}
-                    onChange={(e) => setShippingAddress(prev => ({ ...prev, country: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 rounded font-playfair focus:outline-none focus:ring-2 focus:ring-light-gold"
-                  />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-playfair font-semibold text-navy mb-2">ZIP Code</label>
+                    <input
+                      type="text"
+                      value={shippingAddress.zip}
+                      onChange={(e) => setShippingAddress(prev => ({ ...prev, zip: e.target.value }))}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
+                      placeholder="ZIP"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-playfair font-semibold text-navy mb-2">Country</label>
+                    <input
+                      type="text"
+                      value={shippingAddress.country}
+                      onChange={(e) => setShippingAddress(prev => ({ ...prev, country: e.target.value }))}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
+                      placeholder="Country"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Billing Address */}
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-playfair font-bold text-navy">Billing Address</h2>
-                <label className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-deep-gold rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-playfair text-navy">Billing Address</h2>
+                </div>
+                <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={sameAsShipping}
                     onChange={(e) => setSameAsShipping(e.target.checked)}
-                    className="rounded"
+                    className="rounded border-gray-300 text-navy focus:ring-navy"
                   />
-                  <span className="text-sm font-playfair text-dark-gray">Same as shipping</span>
+                  <span className="text-sm font-playfair text-gray-600">Same as shipping</span>
                 </label>
               </div>
 
               {!sameAsShipping && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-playfair font-bold text-navy mb-2">Full Name</label>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-playfair font-semibold text-navy mb-2">Full Name</label>
                     <input
                       type="text"
                       value={billingAddress.name}
                       onChange={(e) => setBillingAddress(prev => ({ ...prev, name: e.target.value }))}
-                      className="w-full p-3 border border-gray-300 rounded font-playfair focus:outline-none focus:ring-2 focus:ring-light-gold"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
+                      placeholder="Enter your full name"
                       required
                     />
                   </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-playfair font-bold text-navy mb-2">Address Line</label>
+
+                  <div>
+                    <label className="block text-sm font-playfair font-semibold text-navy mb-2">Address Line</label>
                     <input
                       type="text"
                       value={billingAddress.address_line}
                       onChange={(e) => setBillingAddress(prev => ({ ...prev, address_line: e.target.value }))}
-                      className="w-full p-3 border border-gray-300 rounded font-playfair focus:outline-none focus:ring-2 focus:ring-light-gold"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
+                      placeholder="Street address, apartment, etc."
                       required
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-playfair font-bold text-navy mb-2">City</label>
-                    <input
-                      type="text"
-                      value={billingAddress.city}
-                      onChange={(e) => setBillingAddress(prev => ({ ...prev, city: e.target.value }))}
-                      className="w-full p-3 border border-gray-300 rounded font-playfair focus:outline-none focus:ring-2 focus:ring-light-gold"
-                      required
-                    />
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-playfair font-semibold text-navy mb-2">City</label>
+                      <input
+                        type="text"
+                        value={billingAddress.city}
+                        onChange={(e) => setBillingAddress(prev => ({ ...prev, city: e.target.value }))}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
+                        placeholder="City"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-playfair font-semibold text-navy mb-2">State</label>
+                      <input
+                        type="text"
+                        value={billingAddress.state}
+                        onChange={(e) => setBillingAddress(prev => ({ ...prev, state: e.target.value }))}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
+                        placeholder="State"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-playfair font-bold text-navy mb-2">State</label>
-                    <input
-                      type="text"
-                      value={billingAddress.state}
-                      onChange={(e) => setBillingAddress(prev => ({ ...prev, state: e.target.value }))}
-                      className="w-full p-3 border border-gray-300 rounded font-playfair focus:outline-none focus:ring-2 focus:ring-light-gold"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-playfair font-bold text-navy mb-2">ZIP Code</label>
-                    <input
-                      type="text"
-                      value={billingAddress.zip}
-                      onChange={(e) => setBillingAddress(prev => ({ ...prev, zip: e.target.value }))}
-                      className="w-full p-3 border border-gray-300 rounded font-playfair focus:outline-none focus:ring-2 focus:ring-light-gold"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-playfair font-bold text-navy mb-2">Country</label>
-                    <input
-                      type="text"
-                      value={billingAddress.country}
-                      onChange={(e) => setBillingAddress(prev => ({ ...prev, country: e.target.value }))}
-                      className="w-full p-3 border border-gray-300 rounded font-playfair focus:outline-none focus:ring-2 focus:ring-light-gold"
-                    />
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-playfair font-semibold text-navy mb-2">ZIP Code</label>
+                      <input
+                        type="text"
+                        value={billingAddress.zip}
+                        onChange={(e) => setBillingAddress(prev => ({ ...prev, zip: e.target.value }))}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
+                        placeholder="ZIP"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-playfair font-semibold text-navy mb-2">Country</label>
+                      <input
+                        type="text"
+                        value={billingAddress.country}
+                        onChange={(e) => setBillingAddress(prev => ({ ...prev, country: e.target.value }))}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
+                        placeholder="Country"
+                      />
+                    </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Place Order */}
-            <button
-              onClick={handlePlaceOrder}
-              disabled={processing}
-              className="w-full py-4 bg-gradient-to-r from-light-gold to-deep-gold text-navy font-playfair font-bold text-lg rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {processing ? 'Processing...' : `Place Order - ₹${cart.total.toFixed(2)}`}
-            </button>
+            {/* What Happens Next Section */}
+            <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100">
+              <h3 className="text-lg font-playfair text-navy mb-4 font-semibold">What happens next?</h3>
+              <div className="space-y-3 text-sm text-gray-700 font-playfair">
+                <div className="flex items-start space-x-3">
+                  <div className="w-5 h-5 bg-navy rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs font-bold">1</span>
+                  </div>
+                  <span>We review your design for perfection</span>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-5 h-5 bg-deep-gold rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-navy text-xs font-bold">2</span>
+                  </div>
+                  <span>{"You'll receive a confirmation email"}</span>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-5 h-5 bg-navy rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs font-bold">3</span>
+                  </div>
+                  <span>Your gift goes into production within 24 hours</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Place Order Button */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+              <button
+                onClick={handlePlaceOrder}
+                disabled={processing}
+                className="w-full py-4 bg-gradient-to-r from-deep-gold to-navy text-white font-playfair font-bold text-lg rounded-xl hover:opacity-90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] shadow-lg"
+              >
+                {processing ? (
+                  <div className="flex items-center justify-center space-x-3">
+                    <svg className="animate-spin w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span>Processing Payment...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center space-x-3">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span>Pay ₹{cart.total.toFixed(2)} & Place Order</span>
+                  </div>
+                )}
+              </button>
+
+              <div className="mt-6 text-center">
+                <p className="text-sm text-gray-500 font-playfair flex items-center justify-center">
+                  <svg className="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Secure payment powered by Razorpay
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-navy text-white py-8 mt-16">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <p className="font-playfair">&copy; 2025 DreamKnot. All rights reserved.</p>
+      {/* Order Confirmation Step */}
+      {currentStep === 'confirmation' && order && (
+        <div className="max-w-4xl mx-auto px-4 pb-20">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8">
+              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+
+            <h1 className="text-4xl font-playfair text-navy mb-4">
+              Order Confirmed!
+            </h1>
+
+            <p className="text-2xl font-playfair text-gray-600 mb-8">
+              {"Thank you for your order. We're excited to create your personalized gifts!"}
+            </p>
+
+            <div className="bg-deep-gold/5 rounded-2xl p-8 mb-8 max-w-2xl mx-auto">
+              <h2 className="text-2xl font-playfair font-bold text-navy mb-6">Order Details</h2>
+              <div className="text-left space-y-3">
+                <p className="font-playfair text-gray-700">
+                  <span className="font-bold">Order Number:</span> #{order.id.toString().padStart(6, '0')}
+                </p>
+                <p className="font-playfair text-gray-700">
+                  <span className="font-bold">Status:</span> {order.order_status.replace('_', ' ')}
+                </p>
+                <p className="font-playfair text-gray-700">
+                  <span className="font-bold">Order Date:</span> {new Date(order.created_at).toLocaleDateString()}
+                </p>
+                <p className="font-playfair text-gray-700">
+                  <span className="font-bold">Total:</span> ₹{order.total_amount.toFixed(2)}
+                </p>
+              </div>
+            </div>
+
+            {/* Order Items */}
+            <div className="mb-8">
+              <h3 className="text-xl font-playfair font-bold text-navy mb-4">Your Items</h3>
+              <div className="space-y-4">
+                {order.order_items.map((item) => (
+                  <div key={item.id} className="flex items-center justify-between p-4 bg-off-white rounded-xl">
+                    <div className="flex items-center space-x-4">
+                      <div className="relative w-16 h-16 rounded-lg overflow-hidden">
+                        <Image
+                          src={item.product.images[0] || '/next.svg'}
+                          alt={item.product.title}
+                          fill
+                          className="object-cover"
+                          sizes="64px"
+                        />
+                      </div>
+                      <div className="text-left">
+                        <h4 className="font-playfair font-bold text-navy">{item.product.title}</h4>
+                        <p className="text-sm text-gray-600 font-playfair">Quantity: {item.qty}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-playfair font-bold text-navy">₹{item.price.toFixed(2)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="text-center space-y-6">
+              <p className="text-lg font-playfair text-gray-600">
+                {"We'll send you an email confirmation and updates on your order status."}
+              </p>
+
+              {/* Post-Purchase Momentum */}
+              <div className="bg-navy/5 rounded-2xl p-6 max-w-2xl mx-auto">
+                <p className="text-base font-playfair text-gray-700 mb-4">
+                  💝 While we prepare your gift, want to create another special surprise?
+                </p>
+                <Link
+                  href="/gift-finder"
+                  className="inline-flex items-center px-6 py-3 bg-deep-gold text-navy font-playfair font-semibold rounded-lg hover:opacity-90 transition-colors"
+                >
+                  Find Another Perfect Gift
+                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H7" />
+                  </svg>
+                </Link>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  href="/"
+                  className="px-8 py-4 bg-navy text-white font-playfair font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Continue Shopping
+                </Link>
+                <Link
+                  href="/orders"
+                  className="px-8 py-4 border-2 border-navy text-navy font-playfair font-semibold rounded-lg hover:bg-navy hover:text-white transition-colors"
+                >
+                  View All Orders
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
-      </footer>
+      )}
+
+      {/* Founders' Promise - Only show if not on confirmation step */}
+      {currentStep !== 'confirmation' && (
+        <section className="py-16 bg-white border-t border-gray-100">
+          <div className="max-w-4xl mx-auto px-4 text-center">
+            <h2 className="text-3xl lg:text-4xl font-playfair text-navy mb-6">
+              Your Gift, Made With Care
+            </h2>
+            <p className="text-xl text-gray-600 font-playfair leading-relaxed mb-8">
+              Every DreamKnot order is personally reviewed before production.
+              {"If something doesn't look perfect, we'll fix it before shipping."}
+            </p>
+            <div className="bg-off-white rounded-2xl p-8 max-w-2xl mx-auto">
+              <blockquote className="text-lg font-playfair text-navy italic mb-4">
+                {"We want you to love your gift as much as we do."}
+              </blockquote>
+              <cite className="text-sm text-gray-600 font-playfair">
+                — DreamKnot Team
+              </cite>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   )
 }

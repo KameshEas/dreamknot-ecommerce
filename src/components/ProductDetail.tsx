@@ -93,7 +93,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-off-white">
       {/* Header */}
       <Header />
 
@@ -159,7 +159,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                   </span>
                 </div>
               )}
-              <h1 className="text-4xl font-great-vibes text-navy mb-4 leading-tight">
+              <h1 className="text-4xl font-playfair text-navy mb-4 leading-tight">
                 {product.title}
               </h1>
               <p className="text-lg text-gray-600 font-playfair leading-relaxed">
@@ -168,32 +168,51 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             </div>
 
             {/* Pricing */}
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="text-4xl font-playfair font-bold text-navy">
-                  ₹{product.base_price.toFixed(2)}
-                </span>
-                <p className="text-sm text-gray-500 font-playfair mt-1">Starting price</p>
-              </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-4xl font-playfair font-bold text-navy">
+                    ₹{product.base_price.toFixed(2)}
+                  </span>
+                  <div className="space-y-1 mt-1">
+                    <p className="text-sm text-gray-500 font-playfair">Made to order</p>
+                    <p className="text-sm text-gray-500 font-playfair">Printed after approval</p>
+                    <p className="text-sm text-gray-500 font-playfair">Handled with care</p>
+                  </div>
+                </div>
 
-              <button
-                onClick={toggleWishlist}
-                className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 ${
-                  isWishlisted
-                    ? 'bg-red-500 text-white hover:bg-red-600'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                </svg>
-              </button>
+                <button
+                  onClick={toggleWishlist}
+                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 ${
+                    isWishlisted
+                      ? 'bg-red-500 text-white hover:bg-red-600'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Live Preview */}
+            <div className="space-y-6">
+              <div className="bg-off-white rounded-2xl p-6">
+                <h3 className="text-2xl font-playfair text-navy mb-4">Live Preview</h3>
+                <div className="bg-white rounded-lg p-4 border-2 border-dashed border-gray-300 min-h-32 flex items-center justify-center">
+                  <div className="text-center text-gray-500 font-playfair">
+                    <p className="text-lg mb-2">{"Your text here"}</p>
+                    <p className="text-sm">This is how your personalization will appear</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Customizations */}
             {product.customizations.length > 0 && (
               <div className="space-y-6">
-                <h3 className="text-2xl font-great-vibes text-navy">Customize Your Item</h3>
+                <h3 className="text-2xl font-playfair text-navy">Customize Your Item</h3>
                 <div className="space-y-5">
                   {product.customizations.map((customization) => {
                     const metadata = JSON.parse(customization.metadata)
@@ -213,7 +232,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                               className="w-full px-4 py-3 border border-gray-300 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
                             />
                             <p className="text-xs text-gray-500 font-playfair">
-                              Maximum {metadata.maxLength || 100} characters
+                              Maximum {metadata.maxLength || 100} characters • Preview updates automatically
                             </p>
                           </div>
                         )}
@@ -249,6 +268,69 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                 </div>
               </div>
             )}
+
+            {/* Share Preview Hook */}
+            <div className="space-y-6">
+              <div className="bg-deep-gold/10 rounded-2xl p-6 text-center">
+                <h3 className="text-2xl font-playfair text-navy mb-4">This looks great — want to share a preview?</h3>
+                <p className="text-gray-600 font-playfair mb-6">
+                  {"Show friends and family exactly what you're planning to gift them"}
+                </p>
+                <div className="flex justify-center space-x-4">
+                  <button className="bg-navy text-white font-playfair px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    📱 Share Preview
+                  </button>
+                  <button className="bg-white border border-navy text-navy font-playfair px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors">
+                    💬 Send via WhatsApp
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Why This Gift Works */}
+            <div className="space-y-6">
+              <h3 className="text-2xl font-playfair text-navy">Why This {product.title} Makes a Great Gift</h3>
+              <div className="space-y-4">
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-playfair text-gray-700">Soft, premium fabric</p>
+                    <p className="text-sm text-gray-500 font-playfair">Feels great and lasts wash after wash</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-playfair text-gray-700">{"Design doesn't fade after washing"}</p>
+                    <p className="text-sm text-gray-500 font-playfair">High-quality printing that stays vibrant</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-playfair text-gray-700">Looks good even without customization</p>
+                    <p className="text-sm text-gray-500 font-playfair">Beautiful on its own or personalized</p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-blue-50 rounded-lg p-4 mt-6">
+                <p className="text-sm text-blue-800 font-playfair">
+                  <strong>Note:</strong> {"Personalized items can't be returned — so we make sure you love it before it's made."}
+                </p>
+              </div>
+            </div>
 
             {/* Quantity */}
             <div className="space-y-3">
@@ -332,34 +414,37 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       </div>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 mt-24">
+      <footer className="bg-navy text-white py-12 mt-24">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                  <span className="text-navy font-great-vibes text-sm">D</span>
-                </div>
-                <span className="text-xl font-great-vibes">DreamKnot</span>
+                <Image
+                  src="/logo.svg"
+                  alt="DreamKnot Logo"
+                  width={32}
+                  height={32}
+                />
+                <span className="text-xl font-playfair">DreamKnot</span>
               </div>
-              <p className="text-gray-400 font-playfair text-sm leading-relaxed">
+              <p className="text-gray-300 font-playfair text-sm leading-relaxed">
                 Making personalized gifts simple, beautiful, and meaningful.
               </p>
             </div>
 
             <div>
               <h3 className="font-playfair font-semibold text-white mb-4">Products</h3>
-              <ul className="space-y-2 text-gray-400 font-playfair text-sm">
-                <li><a href="#products" className="hover:text-white transition-colors">Mugs</a></li>
-                <li><a href="#products" className="hover:text-white transition-colors">T-Shirts</a></li>
-                <li><a href="#products" className="hover:text-white transition-colors">Pillows</a></li>
-                <li><a href="#products" className="hover:text-white transition-colors">Custom Items</a></li>
+              <ul className="space-y-2 text-gray-300 font-playfair text-sm">
+                <li><Link href="/" className="hover:text-white transition-colors">Mugs</Link></li>
+                <li><Link href="/" className="hover:text-white transition-colors">T-Shirts</Link></li>
+                <li><Link href="/" className="hover:text-white transition-colors">Pillows</Link></li>
+                <li><Link href="/" className="hover:text-white transition-colors">Custom Items</Link></li>
               </ul>
             </div>
 
             <div>
               <h3 className="font-playfair font-semibold text-white mb-4">Support</h3>
-              <ul className="space-y-2 text-gray-400 font-playfair text-sm">
+              <ul className="space-y-2 text-gray-300 font-playfair text-sm">
                 <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Shipping</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Returns</a></li>
@@ -369,7 +454,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
             <div>
               <h3 className="font-playfair font-semibold text-white mb-4">Company</h3>
-              <ul className="space-y-2 text-gray-400 font-playfair text-sm">
+              <ul className="space-y-2 text-gray-300 font-playfair text-sm">
                 <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
@@ -378,8 +463,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             </div>
           </div>
 
-          <div className="border-t border-gray-800 pt-8 text-center">
-            <p className="text-gray-400 font-playfair text-sm">
+          <div className="border-t border-gray-700 pt-8 text-center">
+            <p className="text-gray-300 font-playfair text-sm">
               &copy; 2025 DreamKnot. Made with love for personalized gifting.
             </p>
           </div>

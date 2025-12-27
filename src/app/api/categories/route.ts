@@ -11,11 +11,27 @@ interface StrapiCategory {
 
 export async function GET() {
   try {
+    // Check if we have a valid API token
+    if (!STRAPI_API_TOKEN) {
+      console.warn('STRAPI_API_TOKEN not configured, using fallback categories')
+
+      // Fallback categories for development/demo
+      const fallbackCategories = [
+        { id: 1, name: 'Birthday', created_at: new Date().toISOString() },
+        { id: 2, name: 'For Couples', created_at: new Date().toISOString() },
+        { id: 3, name: 'Mugs', created_at: new Date().toISOString() },
+        { id: 4, name: 'T-Shirts', created_at: new Date().toISOString() },
+        { id: 5, name: 'Home & Garden', created_at: new Date().toISOString() }
+      ]
+
+      return NextResponse.json({ categories: fallbackCategories })
+    }
+
     // Fetch categories from Strapi
     const response = await fetch(`${STRAPI_URL}/api/categories?sort=name:asc`, {
       headers: {
         'Content-Type': 'application/json',
-        ...(STRAPI_API_TOKEN && { 'Authorization': `Bearer ${STRAPI_API_TOKEN}` })
+        'Authorization': `Bearer ${STRAPI_API_TOKEN}`
       }
     })
 
@@ -35,6 +51,16 @@ export async function GET() {
     return NextResponse.json({ categories: transformedCategories })
   } catch (error) {
     console.error('Categories fetch error:', error)
-    return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 })
+
+    // Return fallback categories on any error
+    const fallbackCategories = [
+      { id: 1, name: 'Birthday', created_at: new Date().toISOString() },
+      { id: 2, name: 'For Couples', created_at: new Date().toISOString() },
+      { id: 3, name: 'Mugs', created_at: new Date().toISOString() },
+      { id: 4, name: 'T-Shirts', created_at: new Date().toISOString() },
+      { id: 5, name: 'Home & Garden', created_at: new Date().toISOString() }
+    ]
+
+    return NextResponse.json({ categories: fallbackCategories })
   }
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface User {
   id: number
@@ -16,6 +17,7 @@ export default function Header() {
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [cartItemCount, setCartItemCount] = useState(0)
+  const [isScrolled, setIsScrolled] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -70,6 +72,16 @@ export default function Header() {
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY
+      setIsScrolled(scrollY > 50)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         userMenuRef.current &&
@@ -104,22 +116,18 @@ export default function Header() {
   }
 
   return (
-    <header className="glass-effect border-b border-white/20 sticky top-0 z-50 animate-slide-up h-20 backdrop-blur-xl bg-white/90">
+    <header className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'glass-effect h-16 shadow-sm' : 'bg-transparent h-20'}`}>
       <div className="max-w-7xl mx-auto px-4 h-full flex items-center">
         <div className="flex justify-between items-center w-full">
-          <div className="flex items-end space-x-4">
-            <div className="relative group">
-              <div className="w-12 h-12 bg-gradient-to-br from-navy via-blue-700 to-blue-800 rounded-2xl flex items-center justify-center shadow-xl border border-white/30 hover:shadow-2xl transition-all duration-500 transform group-hover:rotate-6 group-hover:scale-110">
-                <span className="text-white font-great-vibes text-xl transform group-hover:scale-110 transition-transform duration-300">D</span>
-              </div>
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-deep-gold to-light-gold rounded-full animate-glow border-2 border-white shadow-lg"></div>
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-deep-gold to-light-gold rounded-full animate-float opacity-60"></div>
-            </div>
-            <Link href="/" className="text-2xl font-great-vibes text-navy hover:text-deep-gold transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 relative">
-              DreamKnot
-              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-deep-gold to-light-gold group-hover:w-full transition-all duration-500"></div>
-            </Link>
-          </div>
+          <Link href="/" className="hover:opacity-80 transition-opacity duration-300">
+            <Image
+              src="/logo.svg"
+              alt="DreamKnot Logo"
+              width={200}
+              height={200}
+              className="transition-transform duration-300 hover:scale-105"
+            />
+          </Link>
 
 
 
@@ -251,13 +259,15 @@ export default function Header() {
         <div className={`mobile-menu fixed inset-y-0 left-0 w-64 bg-white shadow-xl z-40 md:hidden ${mobileMenuOpen ? 'open' : ''}`}>
           <div className="p-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-navy to-blue-800 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-great-vibes text-sm">D</span>
-                </div>
-                <span className="text-lg font-great-vibes text-navy">DreamKnot</span>
-              </div>
-              <button 
+              <Link href="/" onClick={() => setMobileMenuOpen(false)}>
+                <Image
+                  src="/logo.svg"
+                  alt="DreamKnot Logo"
+                  width={48}
+                  height={48}
+                />
+              </Link>
+              <button
                 onClick={() => setMobileMenuOpen(false)}
                 className="p-2 touch-target"
                 aria-label="Close mobile menu"

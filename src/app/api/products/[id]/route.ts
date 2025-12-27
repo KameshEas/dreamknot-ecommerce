@@ -49,7 +49,24 @@ export async function GET(
       description: item.description,
       base_price: parseFloat(item.base_price),
       category_id: item.category?.id || null,
-      images: item.images?.map((img: StrapiImage) => `${STRAPI_URL}${img.url}`) || [],
+      images: item.images?.map((img: StrapiImage) => {
+        // Handle different URL formats from Strapi
+        if (!img.url) return '/placeholder-product.jpg'
+
+        if (img.url.startsWith('http://') || img.url.startsWith('https://')) {
+          // Already a full URL
+          return img.url
+        } else if (img.url.startsWith('/uploads/')) {
+          // Strapi relative URL - convert to full URL
+          return `${STRAPI_URL}${img.url}`
+        } else if (img.url.startsWith('/')) {
+          // Local URL (mock data)
+          return img.url
+        } else {
+          // Any other relative URL from Strapi
+          return `${STRAPI_URL}/uploads/${img.url}`
+        }
+      }) || ['/placeholder-product.jpg'],
       created_at: item.createdAt,
       category: item.category ? {
         id: item.category.id,

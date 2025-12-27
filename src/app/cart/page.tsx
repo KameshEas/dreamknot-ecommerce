@@ -100,33 +100,21 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-off-white via-white to-light-gold/5">
+    <div className="min-h-screen bg-off-white">
       {/* Header */}
       <Header />
 
       {/* Page Content */}
       <div className="max-w-7xl mx-auto px-4 py-16">
         {/* Page Header */}
-        <div className="text-center mb-16 animate-fade-in">
-          <div className="relative inline-block">
-            <div className="absolute inset-0 bg-gradient-gold rounded-3xl transform rotate-3 opacity-10"></div>
-            <div className="relative flex items-center justify-center space-x-4 bg-white px-8 py-6 rounded-3xl shadow-xl border border-white/50">
-              <div className="w-16 h-16 bg-gradient-to-br from-navy to-blue-800 rounded-2xl flex items-center justify-center shadow-lg">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-              </div>
-              <div>
-                <h1 className="text-5xl font-great-vibes text-navy mb-2">Your Shopping Cart</h1>
-                <p className="text-lg text-dark-gray font-playfair">
-                  {cart.items.length > 0
-                    ? `${cart.items.length} item${cart.items.length !== 1 ? 's' : ''} in your cart`
-                    : 'Your cart is waiting for amazing gifts'
-                  }
-                </p>
-              </div>
-            </div>
-          </div>
+        <div className="text-center mb-16">
+          <h1 className="text-4xl lg:text-5xl font-playfair text-navy mb-4">Your Shopping Cart</h1>
+          <p className="text-xl text-gray-600 font-playfair max-w-2xl mx-auto">
+            {cart.items.length > 0
+              ? `${cart.items.length} item${cart.items.length !== 1 ? 's' : ''} in your cart`
+              : 'Your cart is waiting for amazing gifts'
+            }
+          </p>
         </div>
 
         {cart.items.length === 0 ? (
@@ -136,7 +124,7 @@ export default function CartPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
             </div>
-            <h2 className="text-3xl font-great-vibes text-navy mb-4">Your cart is empty</h2>
+            <h2 className="text-3xl font-playfair text-navy mb-4">Your cart is empty</h2>
             <p className="text-gray-600 font-playfair mb-8 max-w-lg mx-auto leading-relaxed">
               Start creating personalized gifts that will bring joy to your loved ones.
               Browse our collection and add some magic to your cart.
@@ -320,34 +308,37 @@ export default function CartPage() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 mt-24">
+      <footer className="bg-navy text-white py-12 mt-24">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                  <span className="text-navy font-great-vibes text-sm">D</span>
-                </div>
-                <span className="text-xl font-great-vibes">DreamKnot</span>
+                <Image
+                  src="/logo.svg"
+                  alt="DreamKnot Logo"
+                  width={32}
+                  height={32}
+                />
+                <span className="text-xl font-playfair">DreamKnot</span>
               </div>
-              <p className="text-gray-400 font-playfair text-sm leading-relaxed">
+              <p className="text-gray-300 font-playfair text-sm leading-relaxed">
                 Making personalized gifts simple, beautiful, and meaningful.
               </p>
             </div>
 
             <div>
               <h3 className="font-playfair font-semibold text-white mb-4">Products</h3>
-              <ul className="space-y-2 text-gray-400 font-playfair text-sm">
-                <li><a href="#products" className="hover:text-white transition-colors">Mugs</a></li>
-                <li><a href="#products" className="hover:text-white transition-colors">T-Shirts</a></li>
-                <li><a href="#products" className="hover:text-white transition-colors">Pillows</a></li>
-                <li><a href="#products" className="hover:text-white transition-colors">Custom Items</a></li>
+              <ul className="space-y-2 text-gray-300 font-playfair text-sm">
+                <li><Link href="/" className="hover:text-white transition-colors">Mugs</Link></li>
+                <li><Link href="/" className="hover:text-white transition-colors">T-Shirts</Link></li>
+                <li><Link href="/" className="hover:text-white transition-colors">Pillows</Link></li>
+                <li><Link href="/" className="hover:text-white transition-colors">Custom Items</Link></li>
               </ul>
             </div>
 
             <div>
               <h3 className="font-playfair font-semibold text-white mb-4">Support</h3>
-              <ul className="space-y-2 text-gray-400 font-playfair text-sm">
+              <ul className="space-y-2 text-gray-300 font-playfair text-sm">
                 <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Shipping</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Returns</a></li>
@@ -357,7 +348,7 @@ export default function CartPage() {
 
             <div>
               <h3 className="font-playfair font-semibold text-white mb-4">Company</h3>
-              <ul className="space-y-2 text-gray-400 font-playfair text-sm">
+              <ul className="space-y-2 text-gray-300 font-playfair text-sm">
                 <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
@@ -366,8 +357,8 @@ export default function CartPage() {
             </div>
           </div>
 
-          <div className="border-t border-gray-800 pt-8 text-center">
-            <p className="text-gray-400 font-playfair text-sm">
+          <div className="border-t border-gray-700 pt-8 text-center">
+            <p className="text-gray-300 font-playfair text-sm">
               &copy; 2025 DreamKnot. Made with love for personalized gifting.
             </p>
           </div>

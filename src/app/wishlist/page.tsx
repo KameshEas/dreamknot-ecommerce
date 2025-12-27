@@ -101,178 +101,141 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-off-white via-white to-light-gold/5">
+    <div className="min-h-screen bg-off-white">
       {/* Header */}
       <Header />
 
-      {/* Page Content */}
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        {/* Premium Page Header */}
-        <div className="text-center mb-16 relative">
-          {/* Background decorative elements */}
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute top-10 left-1/4 w-20 h-20 border-2 border-red-400 rounded-full"></div>
-            <div className="absolute bottom-10 right-1/4 w-16 h-16 border-2 border-deep-gold rounded-full"></div>
-          </div>
-
-          <div className="relative z-10">
-            <div className="flex items-center justify-center space-x-4 mb-6 animate-fade-in">
-              <div className="relative">
-                <div className="w-16 h-16 bg-gradient-to-br from-red-400 via-pink-500 to-red-600 rounded-2xl flex items-center justify-center shadow-xl animate-float">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                </div>
-                <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-gold rounded-full animate-glow"></div>
-              </div>
-              <h1 className="text-5xl md:text-6xl font-great-vibes text-navy">My Wishlist</h1>
+      {/* Hero Section - Landing Page Style */}
+      <section className="pt-24 pb-16 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-4xl lg:text-5xl font-playfair text-navy mb-6 leading-tight">
+            Your Saved Treasures
+          </h1>
+          <p className="text-xl text-gray-600 font-playfair leading-relaxed mb-8">
+            {wishlist.length > 0
+              ? `You have ${wishlist.length} cherished item${wishlist.length !== 1 ? 's' : ''} saved for the perfect moment`
+              : 'Save items you love for easy access later. Your personalized collection awaits.'
+            }
+          </p>
+          {wishlist.length > 0 && (
+            <div className="flex items-center justify-center space-x-2 text-sm text-gray-500 font-playfair">
+              <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              <span>All items saved securely</span>
             </div>
-            <p className="text-xl text-gray-600 font-playfair max-w-2xl mx-auto leading-relaxed animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              {wishlist.length > 0
-                ? `${wishlist.length} cherished item${wishlist.length !== 1 ? 's' : ''} saved for your perfect gift`
-                : 'Save items you love for easy access later - your personalized collection awaits'
-              }
-            </p>
-          </div>
+          )}
         </div>
+      </section>
 
+      <div className="max-w-7xl mx-auto px-4 pb-20">
         {wishlist.length === 0 ? (
           <EmptyState type="wishlist" />
         ) : (
           <>
-            {/* Premium Wishlist Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-16 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-              {wishlist.map((item, index) => (
-                <div key={item.id} className="group card-premium hover-lift animate-slide-up relative overflow-hidden" style={{ animationDelay: `${0.1 * index}s` }}>
-                  {/* Background glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-red-50/50 via-transparent to-pink-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+            {/* Clean Product Grid - Landing Page Style */}
+            <div className="max-w-6xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {wishlist.map((item) => (
+                  <div key={item.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                    {/* Product Image */}
+                    <div className="relative h-64 bg-gray-50">
+                      <Image
+                        src={item.product.images[0] || '/next.svg'}
+                        alt={item.product.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
 
-                  <div className="relative h-64 overflow-hidden rounded-t-2xl bg-gradient-to-br from-gray-50 to-white">
-                    <Image
-                      src={item.product.images[0] || '/placeholder-product.jpg'}
-                      alt={item.product.title}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-all duration-700 ease-out filter group-hover:brightness-105"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-
-                    {/* Enhanced Category Badge */}
-                    <div className="absolute top-4 left-4 z-10">
+                      {/* Category Badge */}
                       {item.product.category && (
-                        <span className="px-4 py-2 bg-white/90 backdrop-blur-md text-navy font-playfair text-xs font-semibold rounded-full shadow-lg border border-white/20 group-hover:bg-white/95 transition-all duration-300">
-                          {item.product.category.name}
-                        </span>
+                        <div className="absolute top-4 left-4">
+                          <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-navy font-playfair text-xs font-semibold rounded-full border border-white/20">
+                            {item.product.category.name}
+                          </span>
+                        </div>
                       )}
-                    </div>
 
-                    {/* Premium Remove Button */}
-                    <div className="absolute top-4 right-4 z-20">
+                      {/* Remove Button */}
                       <button
                         onClick={() => removeFromWishlist(item.product.id)}
-                        className="w-12 h-12 bg-white/80 backdrop-blur-sm text-red-500 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-all duration-300 shadow-xl transform hover:scale-110 touch-target"
+                        className="absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-sm text-red-500 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-all duration-300 shadow-lg"
                         title="Remove from wishlist"
                       >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
                     </div>
 
-                    {/* Enhanced Hover Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-red-600/90 via-red-500/70 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center z-10">
-                      <div className="text-center transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                        <div className="flex flex-col space-y-4">
-                          <Link href={`/products/${item.product.id}`}>
-                            <button className="px-8 py-4 bg-white/95 backdrop-blur-md text-navy font-playfair font-bold rounded-2xl hover:bg-white transition-all duration-300 transform hover:scale-105 shadow-xl border border-white/20 hover:shadow-2xl">
-                              Customize Now
-                              <svg className="w-5 h-5 inline-block ml-2 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H7" />
-                              </svg>
-                            </button>
-                          </Link>
-                          <button
-                            onClick={() => addToCart(item.product)}
-                            className="px-8 py-4 border-2 border-white/90 text-white font-playfair font-semibold rounded-2xl hover:bg-white/20 backdrop-blur-sm transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
-                          >
-                            Add to Cart
-                          </button>
+                    {/* Product Info */}
+                    <div className="p-6">
+                      <h3 className="text-xl font-playfair font-bold text-navy mb-3 line-clamp-2">
+                        {item.product.title}
+                      </h3>
+                      <p className="text-gray-600 font-playfair text-sm mb-4 line-clamp-2 leading-relaxed">
+                        {item.product.description}
+                      </p>
+
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <span className="text-2xl font-playfair font-bold text-navy">
+                            ₹{item.product.base_price.toFixed(2)}
+                          </span>
+                          <p className="text-xs text-gray-500 font-playfair">Starting price</p>
                         </div>
-                      </div>
-                    </div>
 
-                    {/* Shine effect */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 animate-shimmer"></div>
-                    </div>
-                  </div>
-
-                  <div className="p-6 relative">
-                    <h3 className="text-xl font-playfair font-bold text-navy mb-3 line-clamp-2 group-hover:text-red-600 transition-colors duration-300">
-                      {item.product.title}
-                    </h3>
-                    <p className="text-gray-600 font-playfair text-base mb-4 line-clamp-2 leading-relaxed">
-                      {item.product.description}
-                    </p>
-
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <span className="text-3xl font-playfair font-bold text-navy">
-                          ₹{item.product.base_price.toFixed(2)}
-                        </span>
-                        <p className="text-sm text-deep-gold font-playfair font-medium">Starting price</p>
+                        <Link href={`/products/${item.product.id}`}>
+                          <button className="px-4 py-2 bg-navy text-white font-playfair text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+                            View Details
+                          </button>
+                        </Link>
                       </div>
 
-                      <Link href={`/products/${item.product.id}`}>
-                        <button className="px-6 py-3 bg-gradient-to-br from-navy to-blue-700 text-white font-playfair text-sm font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                          View Details
+                      {/* Action Buttons */}
+                      <div className="space-y-3">
+                        <Link href={`/products/${item.product.id}`}>
+                          <button className="w-full py-3 bg-gradient-to-r from-deep-gold to-navy text-white font-playfair font-semibold rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-[1.02]">
+                            Customize Now
+                          </button>
+                        </Link>
+                        <button
+                          onClick={() => addToCart(item.product)}
+                          className="w-full py-3 border-2 border-navy text-navy font-playfair font-semibold rounded-lg hover:bg-navy hover:text-white transition-all duration-300"
+                        >
+                          Add to Cart
                         </button>
-                      </Link>
-                    </div>
+                      </div>
 
-                    {/* Enhanced Added Date */}
-                    <div className="pt-4 border-t border-gray-100">
-                      <div className="flex items-center space-x-2">
-                        <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <p className="text-sm text-gray-500 font-playfair">
-                          Saved {new Date(item.added_at * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      {/* Trust Message */}
+                      <div className="mt-4 pt-4 border-t border-gray-100 text-center">
+                        <p className="text-xs text-gray-500 font-playfair">
+                          Preview before you buy • Easy edits • Fast delivery
                         </p>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
-            {/* Premium Call to Action */}
-            <div className="relative mt-16 mb-16 animate-fade-in" style={{ animationDelay: '0.5s' }}>
-              {/* Background gradient */}
-              <div className="absolute inset-0 bg-gradient-to-br from-red-50/30 via-transparent to-pink-50/20 rounded-3xl"></div>
-
-              <div className="relative z-10 text-center py-16 bg-gradient-to-br from-off-white to-white rounded-3xl shadow-xl border border-red-100/50">
-                {/* Decorative elements */}
-                <div className="absolute top-6 left-6 w-12 h-12 border-2 border-red-300/40 rounded-full"></div>
-                <div className="absolute bottom-6 right-6 w-8 h-8 border-2 border-deep-gold/40 rounded-full"></div>
-
-                <div className="max-w-2xl mx-auto px-8">
-                  <h3 className="text-4xl md:text-5xl font-great-vibes text-navy mb-6">
-                    Ready to <span className="text-transparent bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text">Customize?</span>
-                  </h3>
-                  <p className="text-lg text-gray-600 font-playfair mb-8 leading-relaxed">
-                    Turn these cherished items into personalized gifts that will be treasured forever. Each piece tells a unique story.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Link href="/cart" className="btn-premium text-lg px-8 py-4 shadow-2xl hover:shadow-glow transform hover:scale-105 transition-all duration-500">
-                      View Cart
-                      <svg className="w-5 h-5 inline-block ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                      </svg>
-                    </Link>
-                    <Link href="/products" className="px-8 py-4 border-3 border-navy text-navy font-playfair font-semibold text-lg rounded-2xl hover:bg-navy hover:text-white transition-all duration-500 transform hover:scale-105 hover:shadow-xl">
-                      Browse More Products
-                    </Link>
-                  </div>
+            {/* Call to Action Section */}
+            <div className="mt-16 text-center">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 max-w-4xl mx-auto">
+                <h3 className="text-3xl lg:text-4xl font-playfair text-navy mb-6">
+                  Ready to Turn These Into Gifts?
+                </h3>
+                <p className="text-lg text-gray-600 font-playfair mb-8 leading-relaxed">
+                  {"Personalize your saved items in minutes. You'll see exactly how they look before checkout."}
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Link href="/products" className="px-8 py-4 bg-navy text-white font-playfair font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+                    Browse All Products
+                  </Link>
+                  <Link href="/gift-finder" className="px-8 py-4 border-2 border-navy text-navy font-playfair font-semibold rounded-lg hover:bg-navy hover:text-white transition-colors">
+                    Find a Gift They Love
+                  </Link>
                 </div>
               </div>
             </div>

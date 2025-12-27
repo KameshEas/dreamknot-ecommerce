@@ -31,6 +31,7 @@ export async function GET(request: Request) {
     const sortBy = searchParams.get('sortBy') || 'newest'
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '12')
+    const featured = searchParams.get('featured') === 'true'
 
     // Build Strapi query parameters
     const params = new URLSearchParams()
@@ -45,9 +46,14 @@ export async function GET(request: Request) {
       params.append('filters[$or][1][description][$containsi]', search)
     }
 
-    // Category filter
-    if (categoryId) {
-      params.append('filters[category][id][$eq]', categoryId)
+    // Category filter - temporarily disabled for debugging
+    // if (categoryId) {
+    //   params.append('filters[category][name][$eq]', categoryId)
+    // }
+
+    // Featured filter
+    if (featured) {
+      params.append('filters[featured][$eq]', 'true')
     }
 
     // Price range filter
@@ -94,13 +100,31 @@ export async function GET(request: Request) {
     const data = await response.json()
 
     // Transform Strapi response to match expected format
+    console.log(`📋 Products API returning ${data.data.length} products:`, data.data.map(p => ({ id: p.id, title: p.title })))
     const transformedProducts = data.data.map((item: StrapiProduct) => ({
       id: item.id,
       title: item.title,
       description: item.description,
       base_price: parseFloat(item.base_price),
       category_id: item.category?.id || null,
-      images: item.images?.map((img: StrapiImage) => `${STRAPI_URL}${img.url}`) || [],
+      images: item.images?.map((img: StrapiImage) => {
+        // Handle different URL formats from Strapi
+        if (!img.url) return '/placeholder-product.jpg'
+
+        if (img.url.startsWith('http://') || img.url.startsWith('https://')) {
+          // Already a full URL
+          return img.url
+        } else if (img.url.startsWith('/uploads/')) {
+          // Strapi relative URL - convert to full URL
+          return `${STRAPI_URL}${img.url}`
+        } else if (img.url.startsWith('/')) {
+          // Local URL (mock data)
+          return img.url
+        } else {
+          // Any other relative URL from Strapi
+          return `${STRAPI_URL}/uploads/${img.url}`
+        }
+      }) || ['/placeholder-product.jpg'],
       created_at: item.createdAt,
       category: item.category ? {
         id: item.category.id,
