@@ -100,7 +100,7 @@ export async function GET(request: Request) {
     const data = await response.json()
 
     // Transform Strapi response to match expected format
-    console.log(`📋 Products API returning ${data.data.length} products:`, data.data.map(p => ({ id: p.id, title: p.title })))
+    console.log(`📋 Products API returning ${data.data.length} products:`, data.data.map((p: StrapiProduct) => ({ id: p.id, title: p.title })))
     const transformedProducts = data.data.map((item: StrapiProduct) => ({
       id: item.id,
       title: item.title,

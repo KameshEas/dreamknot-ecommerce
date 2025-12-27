@@ -14,7 +14,7 @@ interface Product {
   images: string[]
   category: {
     name: string
-  }
+  } | null
   customizations: {
     id: number
     customization_type: string
