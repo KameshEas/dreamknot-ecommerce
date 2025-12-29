@@ -27,10 +27,12 @@ interface Cart {
 
 interface Address {
   name: string
-  address_line: string
+  phone: string
+  address_line_1: string
+  address_line_2?: string
   city: string
   state: string
-  zip: string
+  postal_code: string
   country: string
 }
 
@@ -108,18 +110,22 @@ export default function CheckoutPage() {
   const [processing, setProcessing] = useState(false)
   const [shippingAddress, setShippingAddress] = useState<Address>({
     name: '',
-    address_line: '',
+    phone: '',
+    address_line_1: '',
+    address_line_2: '',
     city: '',
     state: '',
-    zip: '',
+    postal_code: '',
     country: ''
   })
   const [billingAddress, setBillingAddress] = useState<Address>({
     name: '',
-    address_line: '',
+    phone: '',
+    address_line_1: '',
+    address_line_2: '',
     city: '',
     state: '',
-    zip: '',
+    postal_code: '',
     country: ''
   })
   const [sameAsShipping, setSameAsShipping] = useState(true)
@@ -172,12 +178,12 @@ export default function CheckoutPage() {
   }
 
   const handlePlaceOrder = async () => {
-    if (!shippingAddress.name || !shippingAddress.address_line || !shippingAddress.city) {
+    if (!shippingAddress.name || !shippingAddress.phone || !shippingAddress.address_line_1 || !shippingAddress.city) {
       alert('Please fill in all required shipping address fields')
       return
     }
 
-    if (!billingAddress.name || !billingAddress.address_line || !billingAddress.city) {
+    if (!billingAddress.name || !billingAddress.phone || !billingAddress.address_line_1 || !billingAddress.city) {
       alert('Please fill in all required billing address fields')
       return
     }
@@ -469,14 +475,37 @@ export default function CheckoutPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-playfair font-semibold text-navy mb-2">Address Line</label>
+                  <label className="block text-sm font-playfair font-semibold text-navy mb-2">Phone Number</label>
+                  <input
+                    type="tel"
+                    value={shippingAddress.phone}
+                    onChange={(e) => setShippingAddress(prev => ({ ...prev, phone: e.target.value }))}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
+                    placeholder="Enter your phone number"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-playfair font-semibold text-navy mb-2">Address Line 1</label>
                   <input
                     type="text"
-                    value={shippingAddress.address_line}
-                    onChange={(e) => setShippingAddress(prev => ({ ...prev, address_line: e.target.value }))}
+                    value={shippingAddress.address_line_1}
+                    onChange={(e) => setShippingAddress(prev => ({ ...prev, address_line_1: e.target.value }))}
                     className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
                     placeholder="Street address, apartment, etc."
                     required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-playfair font-semibold text-navy mb-2">Address Line 2 (Optional)</label>
+                  <input
+                    type="text"
+                    value={shippingAddress.address_line_2}
+                    onChange={(e) => setShippingAddress(prev => ({ ...prev, address_line_2: e.target.value }))}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
+                    placeholder="Apartment, suite, unit, building, floor, etc."
                   />
                 </div>
 
@@ -506,13 +535,14 @@ export default function CheckoutPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-playfair font-semibold text-navy mb-2">ZIP Code</label>
+                    <label className="block text-sm font-playfair font-semibold text-navy mb-2">Postal Code</label>
                     <input
                       type="text"
-                      value={shippingAddress.zip}
-                      onChange={(e) => setShippingAddress(prev => ({ ...prev, zip: e.target.value }))}
+                      value={shippingAddress.postal_code}
+                      onChange={(e) => setShippingAddress(prev => ({ ...prev, postal_code: e.target.value }))}
                       className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
-                      placeholder="ZIP"
+                      placeholder="Postal Code"
+                      required
                     />
                   </div>
                   <div>
@@ -523,6 +553,7 @@ export default function CheckoutPage() {
                       onChange={(e) => setShippingAddress(prev => ({ ...prev, country: e.target.value }))}
                       className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
                       placeholder="Country"
+                      required
                     />
                   </div>
                 </div>
@@ -567,14 +598,37 @@ export default function CheckoutPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-playfair font-semibold text-navy mb-2">Address Line</label>
+                    <label className="block text-sm font-playfair font-semibold text-navy mb-2">Phone Number</label>
+                    <input
+                      type="tel"
+                      value={billingAddress.phone}
+                      onChange={(e) => setBillingAddress(prev => ({ ...prev, phone: e.target.value }))}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
+                      placeholder="Enter your phone number"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-playfair font-semibold text-navy mb-2">Address Line 1</label>
                     <input
                       type="text"
-                      value={billingAddress.address_line}
-                      onChange={(e) => setBillingAddress(prev => ({ ...prev, address_line: e.target.value }))}
+                      value={billingAddress.address_line_1}
+                      onChange={(e) => setBillingAddress(prev => ({ ...prev, address_line_1: e.target.value }))}
                       className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
                       placeholder="Street address, apartment, etc."
                       required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-playfair font-semibold text-navy mb-2">Address Line 2 (Optional)</label>
+                    <input
+                      type="text"
+                      value={billingAddress.address_line_2}
+                      onChange={(e) => setBillingAddress(prev => ({ ...prev, address_line_2: e.target.value }))}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
+                      placeholder="Apartment, suite, unit, building, floor, etc."
                     />
                   </div>
 
@@ -604,13 +658,14 @@ export default function CheckoutPage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-playfair font-semibold text-navy mb-2">ZIP Code</label>
+                      <label className="block text-sm font-playfair font-semibold text-navy mb-2">Postal Code</label>
                       <input
                         type="text"
-                        value={billingAddress.zip}
-                        onChange={(e) => setBillingAddress(prev => ({ ...prev, zip: e.target.value }))}
+                        value={billingAddress.postal_code}
+                        onChange={(e) => setBillingAddress(prev => ({ ...prev, postal_code: e.target.value }))}
                         className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
-                        placeholder="ZIP"
+                        placeholder="Postal Code"
+                        required
                       />
                     </div>
                     <div>
@@ -621,6 +676,7 @@ export default function CheckoutPage() {
                         onChange={(e) => setBillingAddress(prev => ({ ...prev, country: e.target.value }))}
                         className="w-full px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-colors"
                         placeholder="Country"
+                        required
                       />
                     </div>
                   </div>
