@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useWishlist } from '@/lib/WishlistContext'
+import { useWishlistStore } from '@/lib/wishlist-store'
 
 interface Product {
   id: number
@@ -21,9 +21,10 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist()
+  const { isInWishlist, addToWishlist, removeFromWishlist, addLoading, removeLoading } = useWishlistStore()
   const [imageLoaded, setImageLoaded] = useState(false)
   const isWishlisted = isInWishlist(product.id)
+  const isLoading = addLoading[product.id] || removeLoading[product.id]
 
   const toggleWishlist = async (e: React.MouseEvent) => {
     e.preventDefault()

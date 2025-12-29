@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import ProductReviews from './ProductReviews'
 import Header from './Header'
-import { useWishlist } from '@/lib/WishlistContext'
+import { useWishlistStore } from '@/lib/wishlist-store'
 
 interface Product {
   id: number
@@ -30,11 +30,12 @@ interface ProductDetailProps {
 }
 
 export default function ProductDetail({ product }: ProductDetailProps) {
-  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist()
+  const { isInWishlist, addToWishlist, removeFromWishlist, addLoading, removeLoading } = useWishlistStore()
   const [selectedImage, setSelectedImage] = useState(0)
   const [customizations, setCustomizations] = useState<Record<string, CustomizationValue>>({})
   const [quantity, setQuantity] = useState(1)
   const isWishlisted = isInWishlist(product.id)
+  const isLoading = addLoading[product.id] || removeLoading[product.id]
 
   const handleCustomizationChange = (type: string, value: CustomizationValue) => {
     setCustomizations(prev => ({

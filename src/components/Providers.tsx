@@ -1,11 +1,12 @@
 'use client'
 
-import { WishlistProvider } from '@/lib/WishlistContext'
+import { WishlistInitializer } from './WishlistInitializer'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <WishlistProvider>
+    <>
+      <WishlistInitializer />
       {children}
-    </WishlistProvider>
+    </>
   )
 }
