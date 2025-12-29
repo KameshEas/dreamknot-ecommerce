@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import ProductReviews from './ProductReviews'
 import Header from './Header'
+import { useWishlist } from '@/lib/WishlistContext'
 
 interface Product {
   id: number
@@ -29,10 +30,11 @@ interface ProductDetailProps {
 }
 
 export default function ProductDetail({ product }: ProductDetailProps) {
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist()
   const [selectedImage, setSelectedImage] = useState(0)
   const [customizations, setCustomizations] = useState<Record<string, CustomizationValue>>({})
   const [quantity, setQuantity] = useState(1)
-  const [isWishlisted, setIsWishlisted] = useState(false)
+  const isWishlisted = isInWishlist(product.id)
 
   const handleCustomizationChange = (type: string, value: CustomizationValue) => {
     setCustomizations(prev => ({
@@ -45,24 +47,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
     e.preventDefault()
     e.stopPropagation()
 
-    try {
-      if (isWishlisted) {
-        const response = await fetch('/api/wishlist', {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId: product.id })
-        })
-        if (response.ok) setIsWishlisted(false)
-      } else {
-        const response = await fetch('/api/wishlist', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId: product.id })
-        })
-        if (response.ok) setIsWishlisted(true)
-      }
-    } catch (error) {
-      console.error('Wishlist error:', error)
+    if (isWishlisted) {
+      await removeFromWishlist(product.id)
+    } else {
+      await addToWishlist(product.id)
     }
   }
 

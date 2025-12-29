@@ -20,26 +20,34 @@ interface Product {
 async function getProduct(id: string): Promise<Product | null> {
   try {
     const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://api.dreamknot.co.in'
-    const res = await fetch(`${strapiUrl}/api/products/${id}?populate[category]=true&populate[images]=true`, {
-      cache: 'no-store',
+    const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN
+
+    // Fetch from Strapi using filters like the API route does
+    const response = await fetch(`${strapiUrl}/api/products?filters[id]=${id}&populate[category]=true&populate[images]=true`, {
       headers: {
         'Content-Type': 'application/json',
+        ...(STRAPI_API_TOKEN && { 'Authorization': `Bearer ${STRAPI_API_TOKEN}` })
       }
     })
 
-    if (!res.ok) {
+    if (!response.ok) {
       return null
     }
 
-    const data = await res.json()
+    const data = await response.json()
+
+    // Check if product exists
+    if (!data.data || data.data.length === 0) {
+      return null
+    }
 
     // Transform Strapi response to match expected format
-    const item = data.data
+    const item = data.data[0]
     return {
       id: item.id,
       title: item.title,
       description: item.description,
-      base_price: parseFloat(item.base_price || '0'),
+      base_price: parseFloat(item.base_price),
       images: item.images?.map((img: { url: string }) => {
         if (!img.url) return '/placeholder-product.jpg'
         if (img.url.startsWith('http://') || img.url.startsWith('https://')) {
@@ -52,8 +60,8 @@ async function getProduct(id: string): Promise<Product | null> {
       }) || ['/placeholder-product.jpg'],
       category: item.category ? {
         name: item.category.name
-      } : { name: 'General' },
-      customizations: []
+      } : null,
+      customizations: [] // Will be handled separately if needed
     }
   } catch (error) {
     console.error('Failed to fetch product:', error)

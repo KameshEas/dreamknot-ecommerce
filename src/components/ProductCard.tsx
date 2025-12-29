@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useWishlist } from '@/lib/WishlistContext'
 
 interface Product {
   id: number
@@ -20,55 +21,18 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const [isWishlisted, setIsWishlisted] = useState(false)
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist()
   const [imageLoaded, setImageLoaded] = useState(false)
+  const isWishlisted = isInWishlist(product.id)
 
   const toggleWishlist = async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
 
-    try {
-      if (isWishlisted) {
-        // Remove from wishlist
-        const response = await fetch('/api/wishlist', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ productId: product.id })
-        })
-
-        if (response.ok) {
-          setIsWishlisted(false)
-        } else if (response.status === 401) {
-          alert('Please log in to manage your wishlist')
-        }
-      } else {
-        // Add to wishlist
-        const response = await fetch('/api/wishlist', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ productId: product.id })
-        })
-
-        if (response.ok) {
-          setIsWishlisted(true)
-        } else if (response.status === 401) {
-          alert('Please log in to add items to your wishlist')
-        } else {
-          const error = await response.json()
-          if (error.error !== 'Product already in wishlist') {
-            alert(error.error || 'Failed to add to wishlist')
-          } else {
-            setIsWishlisted(true)
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Wishlist error:', error)
-      alert('Failed to update wishlist')
+    if (isWishlisted) {
+      await removeFromWishlist(product.id)
+    } else {
+      await addToWishlist(product.id)
     }
   }
 
