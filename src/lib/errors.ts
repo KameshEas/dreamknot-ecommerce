@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { AuthError } from './auth'
 import { ValidationError } from './validation'
+import { createSecureErrorResponse } from './security-headers'
 
 export class AppError extends Error {
   constructor(

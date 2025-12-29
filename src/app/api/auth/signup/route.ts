@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateRequest } from '@/lib/validation'
 import { handleApiError } from '@/lib/errors'
+import { authRateLimit } from '@/lib/rate-limit'
 import { AuthService } from '@/services/auth.service'
 import { authSchemas } from '@/lib/validation'
 
-export async function POST(request: NextRequest) {
+async function signupHandler(request: NextRequest) {
   try {
     const signupData = await validateRequest(request, authSchemas.signup)
     const result = await AuthService.signup(signupData)
@@ -18,8 +19,9 @@ export async function POST(request: NextRequest) {
     response.cookies.set('token', result.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 7 // 7 days
+      sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/'
     })
 
     return response
@@ -27,3 +29,5 @@ export async function POST(request: NextRequest) {
     return handleApiError(error)
   }
 }
+
+export const POST = authRateLimit(signupHandler)
