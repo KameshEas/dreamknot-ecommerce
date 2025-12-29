@@ -1,46 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
-import { prisma } from '@/lib/prisma'
+import { validateRequest } from '@/lib/validation'
+import { handleApiError } from '@/lib/errors'
+import { AuthService } from '@/services/auth.service'
+import { authSchemas } from '@/lib/validation'
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json()
-
-    if (!email || !password) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
-    }
-
-    // Find user
-    const user = await prisma.user.findUnique({
-      where: { email }
-    })
-
-    if (!user) {
-      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
-    }
-
-    // Check password
-    const isValidPassword = await bcrypt.compare(password, user.password_hash)
-
-    if (!isValidPassword) {
-      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
-    }
-
-    // Create JWT
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      process.env.JWT_SECRET!,
-      { expiresIn: '7d' }
-    )
+    const loginData = await validateRequest(request, authSchemas.login)
+    const result = await AuthService.login(loginData)
 
     // Set cookie
     const response = NextResponse.json({
       message: 'Login successful',
-      user: { id: user.id, name: user.name, email: user.email }
+      user: result.user
     })
 
-    response.cookies.set('token', token, {
+    response.cookies.set('token', result.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
@@ -49,7 +24,6 @@ export async function POST(request: NextRequest) {
 
     return response
   } catch (error) {
-    console.error('Login error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return handleApiError(error)
   }
 }
