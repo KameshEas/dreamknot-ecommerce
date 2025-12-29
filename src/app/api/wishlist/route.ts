@@ -45,15 +45,25 @@ interface WishlistItemData {
 
 
 async function getUserFromToken() {
-  const cookieStore = await cookies()
-  const token = cookieStore.get('token')?.value
-
-  if (!token) return null
-
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number }
+    const cookieStore = await cookies()
+    const token = cookieStore.get('token')?.value
+
+    if (!token) {
+      console.log('No token found in cookies')
+      return null
+    }
+
+    const jwtSecret = process.env.JWT_SECRET
+    if (!jwtSecret) {
+      console.error('JWT_SECRET environment variable is not set')
+      return null
+    }
+
+    const decoded = jwt.verify(token, jwtSecret) as { userId: number }
     return decoded.userId
-  } catch {
+  } catch (error) {
+    console.error('Error verifying JWT token:', error)
     return null
   }
 }

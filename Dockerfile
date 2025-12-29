@@ -10,14 +10,22 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Copy and setup environment file for build
+COPY .env.production .env.local
+
 # Generate Prisma Client (no real DB needed)
 RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate
+
+# Build the application
 RUN npm run build
 
 # ---- runner ----
 FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+
+# Copy environment file
+COPY --from=builder /app/.env.local ./.env.local
 
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
