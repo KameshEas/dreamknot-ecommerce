@@ -9,7 +9,7 @@ import { userSchemas, authSchemas } from '@/lib/validation'
 // Get user profile
 export async function GET(request: NextRequest) {
   try {
-    const authUser = getAuthUser(request)
+    const authUser = await getAuthUser(request)
     const user = await UserService.getProfile(authUser.id)
     return NextResponse.json({ user })
   } catch (error) {
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
 // Update user profile
 export async function PUT(request: NextRequest) {
   try {
-    const authUser = getAuthUser(request)
+    const authUser = await getAuthUser(request)
     const updateData = await validateRequest(request, userSchemas.updateProfile)
     const user = await UserService.updateProfile(authUser.id, updateData)
     return NextResponse.json({ user })
@@ -32,7 +32,7 @@ export async function PUT(request: NextRequest) {
 // Change password
 export async function PATCH(request: NextRequest) {
   try {
-    const authUser = getAuthUser(request)
+    const authUser = await getAuthUser(request)
     const passwordData = await validateRequest(request, authSchemas.changePassword)
     await AuthService.changePassword(authUser.id, passwordData)
     return NextResponse.json({ message: 'Password updated successfully' })

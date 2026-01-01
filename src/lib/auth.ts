@@ -4,6 +4,8 @@ import { NextRequest } from 'next/server'
 export interface AuthUser {
   id: number
   email: string
+  name: string
+  role: string
 }
 
 export interface JWTPayload {
@@ -26,7 +28,7 @@ export function verifyToken(token: string): JWTPayload {
   }
 }
 
-export function getAuthUser(request: NextRequest): AuthUser {
+export async function getAuthUser(request: NextRequest): Promise<AuthUser> {
   const token = request.cookies.get('token')?.value
 
   if (!token) {
@@ -34,9 +36,23 @@ export function getAuthUser(request: NextRequest): AuthUser {
   }
 
   const decoded = verifyToken(token)
+
+  // Fetch user data from database
+  const { prisma } = await import('./prisma')
+  const user = await prisma.user.findUnique({
+    where: { id: decoded.userId },
+    select: { id: true, email: true, name: true, role: true }
+  }) as { id: number; email: string; name: string | null; role: string } | null
+
+  if (!user) {
+    throw new AuthError('User not found', 404)
+  }
+
   return {
-    id: decoded.userId,
-    email: decoded.email
+    id: user.id,
+    email: user.email,
+    name: user.name || 'Unknown',
+    role: user.role
   }
 }
 
@@ -58,8 +74,22 @@ export async function getAuthUserFromCookies(): Promise<AuthUser> {
   }
 
   const decoded = verifyToken(token)
+
+  // Fetch user data from database
+  const { prisma } = await import('./prisma')
+  const user = await prisma.user.findUnique({
+    where: { id: decoded.userId },
+    select: { id: true, email: true, name: true, role: true }
+  }) as any // Type assertion until Prisma client is regenerated
+
+  if (!user) {
+    throw new AuthError('User not found', 404)
+  }
+
   return {
-    id: decoded.userId,
-    email: decoded.email
+    id: user.id,
+    email: user.email,
+    name: user.name || 'Unknown',
+    role: user.role
   }
 }

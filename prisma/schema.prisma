@@ -23,6 +23,7 @@ model User {
   preferences   String?  // JSON string for user preferences
   email_notifications Boolean @default(true)
   sms_notifications   Boolean @default(false)
+  role          String   @default("customer") // customer, staff, admin
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
@@ -56,6 +57,12 @@ model Product {
   base_price        Float
   category_id       Int
   images            String[] // Array of image URLs
+  stock_quantity    Int      @default(0)
+  is_available      Boolean  @default(true)
+  sku               String?  @unique
+  weight            Float?
+  dimensions        String?  // JSON string for dimensions
+  low_stock_threshold Int    @default(5)
   created_at        DateTime @default(now())
 
   // Relations

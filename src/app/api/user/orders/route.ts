@@ -5,7 +5,7 @@ import { OrdersService } from '@/services/orders.service'
 
 export async function GET(request: NextRequest) {
   try {
-    const authUser = getAuthUser(request)
+    const authUser = await getAuthUser(request)
     const orders = await OrdersService.getUserOrders(authUser.id)
     return NextResponse.json({ orders })
   } catch (error) {

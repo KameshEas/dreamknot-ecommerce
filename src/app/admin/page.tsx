@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import AdminOrders from '@/components/admin/AdminOrders'
+import AdminCustomers from '@/components/admin/AdminCustomers'
+import AdminInventory from '@/components/admin/AdminInventory'
+import AdminReports from '@/components/admin/AdminReports'
 
 interface Order {
   id: number
@@ -20,6 +24,7 @@ interface Order {
 }
 
 export default function AdminPage() {
+  const [activeTab, setActiveTab] = useState('orders')
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
@@ -147,188 +152,105 @@ export default function AdminPage() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 font-playfair">Total Orders</p>
-                <p className="text-3xl font-bold text-navy">{stats.total}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 font-playfair">Pending Orders</p>
-                <p className="text-3xl font-bold text-amber-600">{stats.pending}</p>
-              </div>
-              <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
-                <span className="text-2xl">⏳</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 font-playfair">Processing</p>
-                <p className="text-3xl font-bold text-blue-600">{stats.processing}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <span className="text-2xl">⚙️</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 font-playfair">Total Revenue</p>
-                <p className="text-3xl font-bold text-emerald-600">₹{stats.revenue.toFixed(2)}</p>
-              </div>
-              <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Filters and Search */}
+        {/* Navigation Tabs */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <label className="block text-sm font-playfair font-semibold text-navy mb-2">
-                Search Orders
-              </label>
-              <input
-                type="text"
-                placeholder="Search by order ID, customer name, or email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl font-playfair focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-playfair font-semibold text-navy mb-2">
-                Filter by Status
-              </label>
-              <select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-xl font-playfair focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent min-w-48"
+          <div className="flex flex-wrap gap-4">
+            {[
+              { id: 'orders', label: 'Orders', icon: '📋' },
+              { id: 'customers', label: 'Customers', icon: '👥' },
+              { id: 'inventory', label: 'Inventory', icon: '📦' },
+              { id: 'reports', label: 'Reports', icon: '📊' },
+              { id: 'staff', label: 'Staff', icon: '👷' }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-playfair font-semibold transition-all ${
+                  activeTab === tab.id
+                    ? 'bg-navy text-white shadow-lg'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
               >
-                <option value="all">All Orders</option>
-                <option value="pending">Pending</option>
-                <option value="processing">Processing</option>
-                <option value="in_production">In Production</option>
-                <option value="shipped">Shipped</option>
-                <option value="delivered">Delivered</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-            </div>
+                <span className="text-lg">{tab.icon}</span>
+                {tab.label}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Orders Table */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-playfair font-bold text-navy">
-              Orders ({filteredOrders.length})
-            </h2>
-          </div>
+        {/* Tab Content */}
+        {activeTab === 'orders' && (
+          <>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 font-playfair">Total Orders</p>
+                    <p className="text-3xl font-bold text-navy">{stats.total}</p>
+                  </div>
+                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
 
-          {filteredOrders.length === 0 ? (
-            <div className="text-center py-16">
-              <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-              <h3 className="text-lg font-playfair text-gray-600 mb-2">No orders found</h3>
-              <p className="text-gray-500 font-playfair">Try adjusting your search or filter criteria</p>
+              <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 font-playfair">Pending Orders</p>
+                    <p className="text-3xl font-bold text-amber-600">{stats.pending}</p>
+                  </div>
+                  <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
+                    <span className="text-2xl">⏳</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 font-playfair">Processing</p>
+                    <p className="text-3xl font-bold text-blue-600">{stats.processing}</p>
+                  </div>
+                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <span className="text-2xl">⚙️</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 font-playfair">Total Revenue</p>
+                    <p className="text-3xl font-bold text-emerald-600">₹{stats.revenue.toFixed(2)}</p>
+                  </div>
+                  <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+                    <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
             </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-playfair">
-                      Order Details
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-playfair">
-                      Customer
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-playfair">
-                      Status
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-playfair">
-                      Total
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-playfair">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filteredOrders.map((order) => (
-                    <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div>
-                          <div className="text-sm font-semibold text-navy font-playfair">
-                            #{order.id.toString().padStart(6, '0')}
-                          </div>
-                          <div className="text-sm text-gray-500 font-playfair">
-                            {new Date(order.created_at).toLocaleDateString()}
-                          </div>
-                          <div className="text-sm text-gray-500 font-playfair">
-                            {order.order_items.length} item{order.order_items.length !== 1 ? 's' : ''}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div>
-                          <div className="text-sm font-semibold text-navy font-playfair">{order.user.name}</div>
-                          <div className="text-sm text-gray-500 font-playfair">{order.user.email}</div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(order.order_status)}`}>
-                          <span className="mr-2">{getStatusIcon(order.order_status)}</span>
-                          {order.order_status.replace('_', ' ')}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm font-semibold text-navy font-playfair">
-                        ₹{order.total_amount.toFixed(2)}
-                      </td>
-                      <td className="px-6 py-4">
-                        <select
-                          value={order.order_status}
-                          onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                          className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-playfair focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent bg-white"
-                        >
-                          <option value="pending">Pending</option>
-                          <option value="processing">Processing</option>
-                          <option value="in_production">In Production</option>
-                          <option value="shipped">Shipped</option>
-                          <option value="delivered">Delivered</option>
-                          <option value="cancelled">Cancelled</option>
-                        </select>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+
+            {/* Orders Component */}
+            <AdminOrders
+              orders={orders}
+              loading={loading}
+              onStatusUpdate={updateOrderStatus}
+              getStatusColor={getStatusColor}
+              getStatusIcon={getStatusIcon}
+            />
+          </>
+        )}
+
+        {activeTab === 'customers' && <AdminCustomers />}
+        {activeTab === 'inventory' && <AdminInventory />}
+        {activeTab === 'reports' && <AdminReports />}
+        {activeTab === 'staff' && <div className="text-center py-16"><p className="text-gray-600">Staff management coming soon...</p></div>}
       </div>
     </div>
   )

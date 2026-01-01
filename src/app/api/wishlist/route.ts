@@ -8,7 +8,7 @@ import { wishlistSchemas } from '@/lib/validation'
 // Get user's wishlist
 export async function GET(request: NextRequest) {
   try {
-    const authUser = getAuthUser(request)
+    const authUser = await getAuthUser(request)
     const wishlist = await WishlistService.getUserWishlist(authUser.id)
     return NextResponse.json(wishlist)
   } catch (error) {
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 // Add item to wishlist
 export async function POST(request: NextRequest) {
   try {
-    const authUser = getAuthUser(request)
+    const authUser = await getAuthUser(request)
     const wishlistData = await validateRequest(request, wishlistSchemas.addItem)
     await WishlistService.addToWishlist(authUser.id, wishlistData)
     return NextResponse.json({ message: 'Added to wishlist' })
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
 // Remove item from wishlist
 export async function DELETE(request: NextRequest) {
   try {
-    const authUser = getAuthUser(request)
+    const authUser = await getAuthUser(request)
     const removeData = await validateRequest(request, wishlistSchemas.removeItem)
     await WishlistService.removeFromWishlist(authUser.id, removeData)
     return NextResponse.json({ message: 'Removed from wishlist' })

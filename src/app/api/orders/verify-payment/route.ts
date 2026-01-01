@@ -7,7 +7,7 @@ import { orderSchemas } from '@/lib/validation'
 
 export async function POST(request: NextRequest) {
   try {
-    const authUser = getAuthUser(request)
+    const authUser = await getAuthUser(request)
     const paymentData = await validateRequest(request, orderSchemas.verifyPayment)
     const result = await OrdersService.verifyPaymentAndCreateOrder(authUser.id, paymentData)
     return NextResponse.json({

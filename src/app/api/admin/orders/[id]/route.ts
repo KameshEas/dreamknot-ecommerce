@@ -1,15 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { sendOrderStatusUpdateEmail } from '@/lib/email'
+import { getAuthUser } from '@/lib/auth'
 
-// For simplicity, we'll skip admin authentication for now
-// In production, you'd check for admin role
+// Check if user is admin or staff
+function isAdminOrStaff(user: any): boolean {
+  return user.role === 'admin' || user.role === 'staff'
+}
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const authUser = await getAuthUser(request)
+
+    if (!isAdminOrStaff(authUser)) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    }
+
     const { id } = await params
     const orderId = parseInt(id)
     const { order_status } = await request.json()
