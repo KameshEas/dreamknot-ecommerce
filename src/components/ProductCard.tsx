@@ -41,11 +41,12 @@ export default function ProductCard({ product }: ProductCardProps) {
     <Link href={`/products/${product.id}`}>
       <div className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover-lift transition-all duration-300 cursor-pointer">
         {/* Image Container - Hero First */}
-        <div className="relative h-96 overflow-hidden bg-gray-50">
+        <div className="relative h-64 sm:h-80 md:h-96 overflow-hidden bg-gray-50">
           <Image
             src={product.images[0] || '/placeholder-product.jpg'}
             alt={product.title}
             fill
+            unoptimized={product.images[0]?.startsWith('http') ?? false}
             className="object-cover transition-all duration-500 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             onLoad={() => setImageLoaded(true)}
@@ -61,6 +62,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               src={product.images[1]}
               alt={product.title}
               fill
+                unoptimized={product.images[1]?.startsWith('http') ?? false}
               className="object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500 absolute inset-0"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
@@ -69,7 +71,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* Wishlist Button */}
           <button
             onClick={toggleWishlist}
-            className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 ${
+            className={`absolute top-3 right-3 sm:top-4 sm:right-4 w-11 h-11 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 active:scale-95 ${
               isWishlisted
                 ? 'bg-deep-gold text-white shadow-lg'
                 : 'bg-white/90 text-deep-gold border border-deep-gold/30 hover:bg-deep-gold hover:text-white'
@@ -77,7 +79,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
           >
             <svg
-              className="w-5 h-5 fill-current"
+              className="w-5 h-5 sm:w-5 sm:h-5 fill-current"
               viewBox="0 0 24 24"
             >
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -86,7 +88,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           {/* Action Overlay */}
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
-            <div className="p-6 text-center">
+            <div className="p-4 sm:p-6 text-center">
               <button className="text-white font-playfair text-sm underline hover:no-underline transition-all duration-200">
                 Quick Add
               </button>
@@ -95,7 +97,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Product Info */}
-        <div className="p-6 space-y-3">
+        <div className="p-4 sm:p-6 space-y-2 sm:space-y-3">
           {/* Brand Name - Small, Uppercase */}
           {product.category && (
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
@@ -104,13 +106,13 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
 
           {/* Product Name - Serif, Calm */}
-          <h3 className="text-lg font-playfair text-navy leading-tight line-clamp-2">
+          <h3 className="text-base sm:text-lg font-playfair text-navy leading-tight line-clamp-2">
             {product.title}
           </h3>
 
           {/* Price with microcopy */}
           <div className="space-y-1">
-            <p className="text-xl font-playfair text-navy">
+            <p className="text-lg sm:text-xl font-playfair text-navy">
               ₹{product.base_price.toFixed(2)}
             </p>
             <p className="text-xs text-gray-500 font-playfair">

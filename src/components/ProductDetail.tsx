@@ -107,6 +107,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                 src={product.images[selectedImage] || '/placeholder-product.jpg'}
                 alt={product.title}
                 fill
+                unoptimized={(product.images[selectedImage] || '').startsWith('http')}
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 priority
@@ -128,6 +129,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                       src={image}
                       alt={`${product.title} ${index + 1}`}
                       fill
+                      unoptimized={image.startsWith('http')}
                       className="object-cover"
                       sizes="80px"
                     />
