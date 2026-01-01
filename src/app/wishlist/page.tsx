@@ -108,10 +108,10 @@ export default function WishlistPage() {
       {/* Hero Section - Landing Page Style */}
       <section className="pt-24 pb-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl lg:text-5xl font-playfair text-navy mb-6 leading-tight">
+          <h1 className="text-4xl lg:text-5xl font-playfair font-bold text-navy mb-6 leading-tight">
             Your Saved Treasures
           </h1>
-          <p className="text-xl text-gray-600 font-playfair leading-relaxed mb-8">
+          <p className="text-lg text-gray-600 font-playfair leading-relaxed mb-8">
             {wishlist.length > 0
               ? `You have ${wishlist.length} cherished item${wishlist.length !== 1 ? 's' : ''} saved for the perfect moment`
               : 'Save items you love for easy access later. Your personalized collection awaits.'
@@ -171,7 +171,7 @@ export default function WishlistPage() {
 
                     {/* Product Info */}
                     <div className="p-6">
-                      <h3 className="text-xl font-playfair font-bold text-navy mb-3 line-clamp-2">
+                      <h3 className="text-xl font-playfair font-semibold text-navy mb-3 line-clamp-2">
                         {item.product.title}
                       </h3>
                       <p className="text-gray-600 font-playfair text-sm mb-4 line-clamp-2 leading-relaxed">
@@ -297,22 +297,22 @@ export default function WishlistPage() {
             </div>
 
             <div>
-              <h3 className="font-playfair font-bold text-white mb-6 text-lg">Support</h3>
-              <ul className="space-y-3 text-gray-300 font-playfair">
-                <li><a href="#" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Help Center</a></li>
-                <li><a href="#" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Shipping</a></li>
-                <li><a href="#" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Returns</a></li>
-                <li><a href="#" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Contact</a></li>
+              <h3 className="font-playfair font-semibold text-white mb-4 text-sm">Support</h3>
+              <ul className="space-y-2 text-gray-300 font-playfair text-sm">
+                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Shipping</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Returns</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
               </ul>
             </div>
 
             <div>
-              <h3 className="font-playfair font-bold text-white mb-6 text-lg">Company</h3>
-              <ul className="space-y-3 text-gray-300 font-playfair">
-                <li><a href="#" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">About Us</a></li>
-                <li><a href="#" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Blog</a></li>
-                <li><a href="#" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Careers</a></li>
-                <li><a href="#" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Press</a></li>
+              <h3 className="font-playfair font-semibold text-white mb-4 text-sm">Company</h3>
+              <ul className="space-y-2 text-gray-300 font-playfair text-sm">
+                <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Press</a></li>
               </ul>
             </div>
           </div>

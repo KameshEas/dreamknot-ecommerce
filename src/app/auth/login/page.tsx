@@ -71,7 +71,7 @@ export default function LoginPage() {
 
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h2 className="text-4xl font-playfair text-navy mb-2">Welcome Back</h2>
+          <h2 className="text-4xl font-playfair font-bold text-navy mb-2">Welcome Back</h2>
           <p className="text-gray-600 font-playfair">Access your saved designs, track orders, and personalize gifts faster.</p>
         </div>
 
@@ -154,7 +154,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-gradient-to-r from-navy to-blue-600 text-white font-playfair font-bold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                className="w-full py-4 bg-gradient-to-r from-navy to-blue-600 text-white font-playfair font-semibold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
                 {loading ? (
                   <div className="flex items-center justify-center">

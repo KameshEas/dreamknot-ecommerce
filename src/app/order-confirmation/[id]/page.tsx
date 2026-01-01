@@ -91,7 +91,7 @@ export default function OrderConfirmationPage() {
             </svg>
           </div>
 
-          <h1 className="text-4xl font-great-vibes text-navy mb-4">
+          <h1 className="text-4xl font-playfair font-bold text-navy mb-4">
             Order Confirmed!
           </h1>
 
@@ -100,7 +100,7 @@ export default function OrderConfirmationPage() {
           </p>
 
           <div className="bg-light-gold bg-opacity-20 rounded-lg p-6 mb-8">
-            <h2 className="text-2xl font-playfair font-bold text-navy mb-4">Order Details</h2>
+            <h2 className="text-2xl font-playfair font-semibold text-navy mb-4">Order Details</h2>
             <div className="text-left space-y-2">
               <p className="font-playfair text-dark-gray">
                 <span className="font-bold">Order Number:</span> #{order?.id.toString().padStart(6, '0')}
@@ -122,13 +122,13 @@ export default function OrderConfirmationPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/"
-                className="px-6 py-3 bg-gradient-to-r from-light-gold to-deep-gold text-navy font-playfair font-bold rounded hover:opacity-90 transition-opacity"
+                className="px-8 py-4 bg-gradient-to-r from-light-gold to-deep-gold text-navy font-playfair font-semibold rounded-lg hover:opacity-90 transition-opacity"
               >
                 Continue Shopping
               </Link>
               <a
                 href="#"
-                className="px-6 py-3 border-2 border-navy text-navy font-playfair font-bold rounded hover:bg-navy hover:text-white transition-colors"
+                className="px-8 py-4 border-2 border-navy text-navy font-playfair font-semibold rounded-lg hover:bg-navy hover:text-white transition-colors"
               >
                 Track Order
               </a>

@@ -231,7 +231,7 @@ export default function ProfilePage() {
               )}
             </div>
             <div>
-              <h1 className="text-3xl font-great-vibes text-navy mb-2">{profile.name}</h1>
+              <h1 className="text-3xl font-playfair font-bold text-navy mb-2">{profile.name}</h1>
               <p className="text-gray-600 font-playfair mb-2">{profile.email}</p>
               <p className="text-sm text-gray-500 font-playfair">
                 Member since {new Date(profile.created_at).toLocaleDateString('en-IN', {
@@ -574,12 +574,12 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <h3 className="font-playfair font-semibold text-white mb-4">Products</h3>
-              <ul className="space-y-2 text-gray-400 font-playfair text-sm">
-                <li><a href="#products" className="hover:text-white transition-colors">Mugs</a></li>
-                <li><a href="#products" className="hover:text-white transition-colors">T-Shirts</a></li>
-                <li><a href="#products" className="hover:text-white transition-colors">Pillows</a></li>
-                <li><a href="#products" className="hover:text-white transition-colors">Custom Items</a></li>
+              <h3 className="font-playfair font-semibold text-white mb-4 text-sm">Products</h3>
+              <ul className="space-y-2 text-gray-300 font-playfair text-sm">
+                <li><Link href="/products" className="hover:text-white transition-colors">Mugs</Link></li>
+                <li><Link href="/products" className="hover:text-white transition-colors">T-Shirts</Link></li>
+                <li><Link href="/products" className="hover:text-white transition-colors">Pillows</Link></li>
+                <li><Link href="/products" className="hover:text-white transition-colors">Custom Items</Link></li>
               </ul>
             </div>
 

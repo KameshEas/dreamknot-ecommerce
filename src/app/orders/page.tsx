@@ -136,10 +136,10 @@ export default function OrdersPage() {
       {/* Hero Section - Landing Page Style */}
       <section className="pt-24 pb-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl lg:text-5xl font-playfair text-navy mb-6 leading-tight">
+          <h1 className="text-4xl lg:text-5xl font-playfair font-bold text-navy mb-6 leading-tight">
             Your Order History
           </h1>
-          <p className="text-xl text-gray-600 font-playfair leading-relaxed mb-8">
+          <p className="text-lg text-gray-600 font-playfair leading-relaxed mb-8">
             {orders.length > 0
               ? 'Track and manage every personalized gift you\'ve ordered'
               : 'Your personalized gifts will appear here once you place your first order'
@@ -399,12 +399,12 @@ export default function OrdersPage() {
             </div>
 
             <div>
-              <h3 className="font-playfair font-semibold text-white mb-4">Products</h3>
-              <ul className="space-y-2 text-gray-400 font-playfair text-sm">
-                <li><a href="#products" className="hover:text-white transition-colors">Mugs</a></li>
-                <li><a href="#products" className="hover:text-white transition-colors">T-Shirts</a></li>
-                <li><a href="#products" className="hover:text-white transition-colors">Pillows</a></li>
-                <li><a href="#products" className="hover:text-white transition-colors">Custom Items</a></li>
+              <h3 className="font-playfair font-semibold text-white mb-4 text-sm">Products</h3>
+              <ul className="space-y-2 text-gray-300 font-playfair text-sm">
+                <li><Link href="/products" className="hover:text-white transition-colors">Mugs</Link></li>
+                <li><Link href="/products" className="hover:text-white transition-colors">T-Shirts</Link></li>
+                <li><Link href="/products" className="hover:text-white transition-colors">Pillows</Link></li>
+                <li><Link href="/products" className="hover:text-white transition-colors">Custom Items</Link></li>
               </ul>
             </div>
 

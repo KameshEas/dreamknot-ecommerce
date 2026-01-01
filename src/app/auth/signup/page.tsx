@@ -133,7 +133,7 @@ export default function SignupPage() {
 
       <div className="max-w-md mx-auto pt-8 pb-16 space-y-8">
         <div className="text-center">
-          <h2 className="text-4xl font-playfair text-navy mb-2">Create Your Account</h2>
+          <h2 className="text-4xl font-playfair font-bold text-navy mb-2">Create Your Account</h2>
           <p className="text-gray-600 font-playfair">Save your designs, preview gifts before buying, and track your order with ease.</p>
           <p className="text-sm text-gray-500 font-playfair mt-2">Takes less than a minute • No spam • Secure</p>
         </div>

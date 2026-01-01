@@ -62,29 +62,29 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left-aligned text block */}
             <div className="space-y-6">
-              <h1 className="text-5xl lg:text-6xl font-playfair text-navy leading-tight">
+              <h1 className="text-4xl lg:text-5xl font-playfair font-bold text-navy leading-tight">
                 Your First Personalized Gift — Made Simple
               </h1>
-              <p className="text-xl text-gray-600 font-playfair leading-relaxed max-w-lg">
+              <p className="text-lg text-gray-600 font-playfair leading-relaxed max-w-lg">
                 No confusing tools. No guesswork. Preview before you buy.
                 {"If something's not right, we fix it."}
               </p>
-              <div className="pt-4">
+              <div className="pt-6">
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link
                     href="/gift-finder"
-                    className="bg-deep-gold text-navy font-playfair font-semibold px-8 py-4 rounded-lg hover:bg-opacity-90 transition-colors text-lg inline-block text-center"
+                    className="bg-deep-gold text-navy font-playfair font-semibold px-8 py-4 rounded-lg hover:bg-opacity-90 transition-colors text-base inline-block text-center"
                   >
                     👉 Create Gift
                   </Link>
                   <Link
                     href="/products"
-                    className="bg-white border-2 border-navy text-navy font-playfair font-semibold px-8 py-4 rounded-lg hover:bg-navy hover:text-white transition-colors text-lg"
+                    className="bg-white border-2 border-navy text-navy font-playfair font-semibold px-8 py-4 rounded-lg hover:bg-navy hover:text-white transition-colors text-base"
                   >
                     Gifts That Mean More — Explore All
                   </Link>
                 </div>
-                <p className="text-sm text-gray-500 font-playfair mt-2">
+                <p className="text-sm text-gray-500 font-playfair mt-4">
                   Free preview • Easy edits • Fast delivery
                 </p>
               </div>
@@ -116,7 +116,7 @@ export default function Home() {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-playfair text-navy mb-6">
+            <h2 className="text-3xl lg:text-4xl font-playfair font-semibold text-navy mb-6">
               Why DreamKnot?
             </h2>
             <p className="text-xl text-gray-600 font-playfair leading-relaxed max-w-3xl mx-auto">
@@ -168,7 +168,7 @@ export default function Home() {
       <section className="py-20 bg-off-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-playfair text-navy mb-6">
+            <h2 className="text-3xl lg:text-4xl font-playfair font-semibold text-navy mb-6">
               How Your Gift Comes to Life
             </h2>
             <p className="text-xl text-gray-600 font-playfair leading-relaxed max-w-3xl mx-auto">
@@ -228,7 +228,7 @@ export default function Home() {
       {/* Founders' Promise */}
       <section className="py-16 bg-white border-t border-gray-100">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl lg:text-4xl font-playfair text-navy mb-6">
+          <h2 className="text-3xl lg:text-4xl font-playfair font-semibold text-navy mb-6">
             A Thoughtful Gift, Done Right
           </h2>
           <p className="text-xl text-gray-600 font-playfair leading-relaxed mb-8">
@@ -288,7 +288,7 @@ export default function Home() {
       <section className="py-20 bg-off-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-playfair text-navy mb-4">
+            <h2 className="text-3xl lg:text-4xl font-playfair font-semibold text-navy mb-4">
               Browse All Gifts
             </h2>
             <p className="text-lg text-gray-600 font-playfair max-w-2xl mx-auto">

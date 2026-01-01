@@ -378,10 +378,10 @@ export default function CheckoutPage() {
       {/* Hero Section */}
       <section className="pt-24 pb-16 px-4 bg-gradient-to-br from-off-white to-white">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl lg:text-5xl font-playfair text-navy mb-6 leading-tight">
+          <h1 className="text-4xl lg:text-5xl font-playfair font-bold text-navy mb-6 leading-tight">
             Almost There — Your Gift is Ready
           </h1>
-          <p className="text-xl text-gray-600 font-playfair leading-relaxed mb-8">
+          <p className="text-lg text-gray-600 font-playfair leading-relaxed mb-8">
             Secure checkout in just a few steps. Preview before you buy • Easy edits • Fast delivery.
           </p>
           <div className="flex items-center justify-center space-x-8 text-sm text-gray-500 font-playfair">
@@ -435,7 +435,7 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div className="flex-grow">
-                      <h3 className="font-playfair font-bold text-navy text-lg mb-1">{item.product.title}</h3>
+                      <h3 className="font-playfair font-semibold text-navy text-lg mb-1">{item.product.title}</h3>
                       <p className="text-gray-600 font-playfair text-sm">Quantity: {item.qty}</p>
                       {item.customization && (
                         <p className="text-gray-500 font-playfair text-xs mt-1">
@@ -797,7 +797,7 @@ export default function CheckoutPage() {
 
             {/* What Happens Next Section */}
             <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100">
-              <h3 className="text-lg font-playfair text-navy mb-4 font-semibold">What happens next?</h3>
+              <h3 className="text-lg font-playfair font-semibold text-navy mb-4">What happens next?</h3>
               <div className="space-y-3 text-sm text-gray-700 font-playfair">
                 <div className="flex items-start space-x-3">
                   <div className="w-5 h-5 bg-navy rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">

@@ -69,7 +69,7 @@ export default function ProductGrid({ search, category, minPrice, maxPrice, sort
     return (
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
         {[...Array(9)].map((_, i) => (
-          <div key={i} className="bg-white rounded-2xl shadow-sm p-6 animate-pulse border border-gray-100 hover-lift" style={{ animationDelay: `${i * 0.1}s` }}>
+          <div key={i} className="bg-white rounded-2xl shadow-sm p-6 animate-pulse border border-gray-100" style={{ animationDelay: `${i * 0.1}s` }}>
             <div className="w-full h-96 bg-gray-200 rounded-xl mb-4"></div>
             <div className="space-y-3">
               <div className="h-5 bg-gray-200 rounded w-3/4"></div>

@@ -142,18 +142,18 @@ export default function EmptyState({
   }
 
   return (
-    <div className="empty-state">
-      <div className="empty-state-icon">
+    <div className="text-center py-16">
+      <div className="mb-8">
         {getIcon()}
       </div>
-      <h2 className="text-3xl font-great-vibes text-navy mb-4">{finalTitle}</h2>
-      <p className="text-gray-600 font-sans mb-8 max-w-lg mx-auto leading-relaxed">
+      <h2 className="text-3xl font-playfair font-semibold text-navy mb-6">{finalTitle}</h2>
+      <p className="text-lg text-gray-600 font-playfair mb-8 max-w-lg mx-auto leading-relaxed">
         {finalDescription}
       </p>
       {finalActionHref && (
         <Link
           href={finalActionHref}
-          className="px-8 py-4 bg-navy text-white font-sans font-semibold rounded-lg hover:bg-blue-700 transition-colors transform hover:scale-105 touch-target"
+          className="px-8 py-4 bg-navy text-white font-playfair font-semibold rounded-lg hover:bg-blue-700 transition-colors transform hover:scale-105"
         >
           {finalActionText}
         </Link>

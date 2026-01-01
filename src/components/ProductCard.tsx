@@ -134,14 +134,14 @@ export default function ProductCard({ product }: ProductCardProps) {
             </p>
           )}
 
-          {/* Product Name - Serif, Calm */}
-          <h3 className="text-base sm:text-lg font-playfair text-navy leading-tight line-clamp-2">
+          {/* Product Name */}
+          <h3 className="text-lg font-playfair font-semibold text-navy leading-tight line-clamp-2">
             {product.title}
           </h3>
 
           {/* Price with microcopy */}
           <div className="space-y-1">
-            <p className="text-lg sm:text-xl font-playfair text-navy">
+            <p className="text-xl font-playfair font-semibold text-navy">
               ₹{product.base_price.toFixed(2)}
             </p>
             <p className="text-xs text-gray-500 font-playfair">
@@ -149,16 +149,16 @@ export default function ProductCard({ product }: ProductCardProps) {
             </p>
           </div>
 
-          {/* Key benefits - 3 questions answered instantly */}
-          <div className="space-y-2 pt-2 border-t border-gray-100">
+          {/* Key benefits */}
+          <div className="space-y-2 pt-3 border-t border-gray-100">
             <div className="flex items-center text-xs text-gray-600 font-playfair">
-              <svg className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-green-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               Preview before you buy
             </div>
             <div className="flex items-center text-xs text-gray-600 font-playfair">
-              <svg className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-green-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               Delivered in 24–48 hrs

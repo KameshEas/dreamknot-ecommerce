@@ -146,10 +146,10 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
     <div className="space-y-8">
       {/* Reviews Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-great-vibes text-navy">Customer Reviews</h2>
+        <h2 className="text-3xl font-playfair font-semibold text-navy">Customer Reviews</h2>
         <button
           onClick={() => setShowReviewForm(!showReviewForm)}
-          className="px-6 py-3 bg-navy text-white font-playfair font-medium rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-6 py-3 bg-navy text-white font-playfair font-semibold rounded-lg hover:bg-blue-700 transition-colors"
         >
           Write a Review
         </button>
@@ -158,7 +158,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
       {/* Review Form */}
       {showReviewForm && (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-          <h3 className="text-2xl font-great-vibes text-navy mb-6">Write Your Review</h3>
+          <h3 className="text-2xl font-playfair font-semibold text-navy mb-6">Write Your Review</h3>
           <form onSubmit={handleSubmitReview} className="space-y-6">
             <div>
               <label className="block text-sm font-playfair font-semibold text-navy mb-3">
@@ -202,14 +202,14 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
               <button
                 type="button"
                 onClick={() => setShowReviewForm(false)}
-                className="px-6 py-3 border border-gray-300 text-gray-700 font-playfair font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-6 py-3 border border-gray-300 text-gray-700 font-playfair font-semibold rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={submittingReview}
-                className="px-6 py-3 bg-navy text-white font-playfair font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                className="px-6 py-3 bg-navy text-white font-playfair font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
               >
                 {submittingReview ? 'Submitting...' : 'Submit Review'}
               </button>
@@ -223,17 +223,17 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
           <div className="grid md:grid-cols-2 gap-8">
             <div className="text-center">
-              <div className="text-5xl font-bold text-navy font-playfair mb-2">
+              <div className="text-4xl font-playfair font-bold text-navy mb-2">
                 {stats.average.toFixed(1)}
               </div>
               <StarRating rating={stats.average} readonly size="lg" />
-              <div className="text-gray-600 font-playfair mt-2">
+              <div className="text-gray-600 font-playfair mt-4">
                 Based on {stats.total} review{stats.total !== 1 ? 's' : ''}
               </div>
             </div>
 
             <div>
-              <h4 className="text-lg font-playfair font-semibold text-navy mb-4">Rating Breakdown</h4>
+              <h4 className="text-xl font-playfair font-semibold text-navy mb-6">Rating Breakdown</h4>
               {renderRatingDistribution()}
             </div>
           </div>
@@ -263,7 +263,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
                       className="object-cover rounded-full"
                     />
                   ) : (
-                    <span className="text-lg font-great-vibes text-navy">
+                    <span className="text-lg font-playfair font-semibold text-navy">
                       {review.user.name.charAt(0).toUpperCase()}
                     </span>
                   )}

@@ -172,9 +172,9 @@ export default function GiftFinder() {
         <div className="pt-32 pb-16 px-4">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
-              <h1 className="text-4xl lg:text-5xl font-playfair text-navy mb-6">
-                Perfect Gifts for Them! 🎁
-              </h1>
+            <h1 className="text-4xl lg:text-5xl font-playfair font-bold text-navy mb-6">
+              Perfect Gifts for Them! 🎁
+            </h1>
               <p className="text-xl text-gray-600 font-playfair max-w-2xl mx-auto mb-8">
                 {"Based on your answers, here are some personalized recommendations they'll love."}
               </p>
@@ -229,7 +229,7 @@ export default function GiftFinder() {
       <div className="pt-32 pb-16 px-4">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-4xl lg:text-5xl font-playfair text-navy mb-6">
+            <h1 className="text-4xl lg:text-5xl font-playfair font-bold text-navy mb-6">
               Gifts That Mean More — Explore All
             </h1>
             <p className="text-xl text-gray-600 font-playfair">
@@ -253,7 +253,7 @@ export default function GiftFinder() {
 
           {/* Question Card */}
           <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-            <h2 className="text-2xl font-playfair text-navy mb-6">
+            <h2 className="text-2xl font-playfair font-semibold text-navy mb-6">
               {currentQ.question}
             </h2>
 

@@ -134,30 +134,30 @@ export default function Header() {
           <div className="flex items-end space-x-4">
             {isLoggedIn && (
               <>
-                <a
+                <Link
                   href="/wishlist"
-                  className="relative p-3 text-dark-gray hover:text-navy transition-all duration-300 transform hover:scale-110 group"
+                  className="relative p-3 text-gray-600 hover:text-navy transition-all duration-300 transform hover:scale-110 group"
                   title="Wishlist"
                 >
                   <svg className="w-6 h-6 group-hover:stroke-deep-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
-                </a>
+                </Link>
 
-                <a
+                <Link
                   href="/cart"
-                  className="relative p-3 text-dark-gray hover:text-navy transition-all duration-300 transform hover:scale-110 group"
+                  className="relative p-3 text-gray-600 hover:text-navy transition-all duration-300 transform hover:scale-110 group"
                   title="Shopping Cart"
                 >
                   <svg className="w-6 h-6 group-hover:stroke-deep-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                   </svg>
                   {cartItemCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-gradient-gold text-navy text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center min-w-[24px] shadow-lg animate-pulse">
+                    <span className="absolute -top-2 -right-2 bg-deep-gold text-navy text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center min-w-[24px] shadow-lg animate-pulse">
                       {cartItemCount > 99 ? '99+' : cartItemCount}
                     </span>
                   )}
-                </a>
+                </Link>
               </>
             )}
 
@@ -165,7 +165,7 @@ export default function Header() {
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={toggleUserMenu}
-                  className="flex items-center space-x-3 text-dark-gray hover:text-navy transition-all duration-300 group"
+                  className="flex items-center space-x-3 text-gray-600 hover:text-navy transition-all duration-300 group"
                 >
                   <div className="relative">
                     <div className="w-10 h-10 bg-gradient-to-br from-navy to-blue-800 rounded-full flex items-center justify-center shadow-md border-2 border-white/50">
@@ -189,7 +189,7 @@ export default function Header() {
                 </button>
 
                 {showUserMenu && (
-                  <div className="fixed right-4 top-20 w-64 card-premium animate-scale-in z-[60]">
+                  <div className="fixed right-4 top-20 w-64 bg-white rounded-lg shadow-lg border border-gray-100 z-[60]">
                     <div className="p-4 border-b border-gray-100">
                       <div className="text-center">
                         <div className="font-playfair text-sm text-gray-600">{user.email}</div>
@@ -197,27 +197,27 @@ export default function Header() {
                     </div>
 
                     <div className="py-2">
-                      <a
+                      <Link
                         href="/profile"
-                        className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gradient-subtle font-playfair text-sm transition-all duration-200"
+                        className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-50 font-playfair text-sm transition-all duration-200"
                         onClick={() => setShowUserMenu(false)}
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                         <span>My Profile</span>
-                      </a>
+                      </Link>
 
-                      <a
+                      <Link
                         href="/orders"
-                        className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gradient-subtle font-playfair text-sm transition-all duration-200"
+                        className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-50 font-playfair text-sm transition-all duration-200"
                         onClick={() => setShowUserMenu(false)}
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         <span>My Orders</span>
-                      </a>
+                      </Link>
                     </div>
 
                     <div className="border-t border-gray-100 pt-2">
@@ -235,12 +235,12 @@ export default function Header() {
                 )}
               </div>
             ) : (
-              <a
+              <Link
                 href="/auth/login"
-                className="hidden md:block btn-premium"
+                className="hidden md:block px-6 py-3 bg-navy text-white font-playfair font-semibold rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Sign In
-              </a>
+              </Link>
             )}
 
             <button 
@@ -281,22 +281,22 @@ export default function Header() {
 
           <nav className="p-4 space-y-2">
             {isLoggedIn && (
-              <a
+              <Link
                 href="/profile"
                 className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg font-playfair font-medium transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Profile
-              </a>
+              </Link>
             )}
             {!isLoggedIn && (
-              <a
+              <Link
                 href="/auth/login"
                 className="block px-4 py-3 bg-navy text-white rounded-lg font-playfair font-medium text-center hover:bg-blue-700 transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Sign In
-              </a>
+              </Link>
             )}
           </nav>
         </div>
