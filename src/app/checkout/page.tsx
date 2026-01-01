@@ -129,6 +129,53 @@ export default function CheckoutPage() {
     country: ''
   })
   const [sameAsShipping, setSameAsShipping] = useState(true)
+  const [discountCode, setDiscountCode] = useState('')
+  const [appliedDiscount, setAppliedDiscount] = useState<{ amount: number; code: string } | null>(null)
+  const [discountLoading, setDiscountLoading] = useState(false)
+
+  const handleApplyDiscount = async () => {
+    if (!discountCode.trim()) {
+      alert('Please enter a discount code')
+      return
+    }
+
+    setDiscountLoading(true)
+    try {
+      const response = await fetch('/api/discount-codes/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: discountCode.trim(),
+          orderTotal: cart.total
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.valid) {
+        setAppliedDiscount({ amount: data.discount, code: discountCode.trim() })
+        alert(`Discount applied! You saved ₹${data.discount.toFixed(2)}`)
+      } else {
+        alert('Invalid or expired discount code')
+        setAppliedDiscount(null)
+      }
+    } catch (error) {
+      console.error('Discount validation error:', error)
+      alert('Failed to validate discount code')
+      setAppliedDiscount(null)
+    } finally {
+      setDiscountLoading(false)
+    }
+  }
+
+  const handleRemoveDiscount = () => {
+    setAppliedDiscount(null)
+    setDiscountCode('')
+  }
+
+  const getFinalTotal = () => {
+    return appliedDiscount ? Math.max(0, cart.total - appliedDiscount.amount) : cart.total
+  }
 
   useEffect(() => {
     fetchCart()
@@ -405,9 +452,23 @@ export default function CheckoutPage() {
 
               {/* Order Total */}
               <div className="mt-8 pt-6 border-t border-gray-200">
-                <div className="flex justify-between items-center">
-                  <span className="text-2xl font-playfair text-navy">Total</span>
-                  <span className="text-3xl font-playfair font-bold text-navy">₹{cart.total.toFixed(2)}</span>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-playfair text-gray-700">Subtotal</span>
+                    <span className="text-lg font-playfair text-gray-700">₹{cart.total.toFixed(2)}</span>
+                  </div>
+
+                  {appliedDiscount && (
+                    <div className="flex justify-between items-center text-green-600">
+                      <span className="text-lg font-playfair">Discount ({appliedDiscount.code})</span>
+                      <span className="text-lg font-playfair">-₹{appliedDiscount.amount.toFixed(2)}</span>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between items-center pt-3 border-t border-gray-200">
+                    <span className="text-2xl font-playfair text-navy">Total</span>
+                    <span className="text-3xl font-playfair font-bold text-navy">₹{getFinalTotal().toFixed(2)}</span>
+                  </div>
                 </div>
                 <p className="text-sm text-gray-500 font-playfair mt-2">Includes all taxes and shipping</p>
               </div>
@@ -684,6 +745,56 @@ export default function CheckoutPage() {
               )}
             </div>
 
+            {/* Discount Code */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h3 className="text-lg font-playfair text-navy mb-4">Have a discount code?</h3>
+              {appliedDiscount ? (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span className="font-playfair text-green-800 font-medium">
+                        Code {appliedDiscount.code} applied!
+                      </span>
+                    </div>
+                    <button
+                      onClick={handleRemoveDiscount}
+                      className="text-red-600 hover:text-red-800 text-sm font-playfair underline"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <p className="text-green-700 font-playfair text-sm mt-1">
+                    You saved ₹{appliedDiscount.amount.toFixed(2)}
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex space-x-3">
+                    <input
+                      type="text"
+                      value={discountCode}
+                      onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+                      placeholder="Enter discount code"
+                      className="flex-1 px-4 py-3 border border-gray-200 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent uppercase"
+                    />
+                    <button
+                      onClick={handleApplyDiscount}
+                      disabled={discountLoading || !discountCode.trim()}
+                      className="px-6 py-3 bg-navy text-white font-playfair font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {discountLoading ? 'Applying...' : 'Apply'}
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500 font-playfair">
+                    Enter your discount code to get savings on your order
+                  </p>
+                </div>
+              )}
+            </div>
+
             {/* What Happens Next Section */}
             <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100">
               <h3 className="text-lg font-playfair text-navy mb-4 font-semibold">What happens next?</h3>
@@ -728,7 +839,7 @@ export default function CheckoutPage() {
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
-                    <span>Pay ₹{cart.total.toFixed(2)} & Place Order</span>
+                    <span>Pay ₹{getFinalTotal().toFixed(2)} & Place Order</span>
                   </div>
                 )}
               </button>

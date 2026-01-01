@@ -89,7 +89,36 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* Action Overlay */}
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
             <div className="p-4 sm:p-6 text-center">
-              <button className="text-white font-playfair text-sm underline hover:no-underline transition-all duration-200">
+              <button
+                onClick={async (e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+
+                  try {
+                    const response = await fetch('/api/cart', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        productId: product.id,
+                        qty: 1
+                      })
+                    })
+
+                    if (response.ok) {
+                      alert('Added to cart successfully!')
+                    } else if (response.status === 401) {
+                      alert('Please log in to add items to cart')
+                    } else {
+                      const error = await response.json()
+                      alert(`Error: ${error.error}`)
+                    }
+                  } catch (error) {
+                    console.error('Add to cart error:', error)
+                    alert('Failed to add to cart')
+                  }
+                }}
+                className="text-white font-playfair text-sm underline hover:no-underline transition-all duration-200"
+              >
                 Quick Add
               </button>
             </div>

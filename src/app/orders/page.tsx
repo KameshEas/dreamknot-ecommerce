@@ -105,11 +105,11 @@ export default function OrdersPage() {
       case 'pending':
         return { text: 'Contact Support', href: '#', icon: '💬' }
       case 'processing':
-        return { text: 'View Design Preview', href: `/orders/${orderId}/design`, icon: '👁️' }
+        return { text: 'Design in Review', href: '#', icon: '👁️', disabled: true }
       case 'in_production':
-        return { text: 'Track Production', href: `/orders/${orderId}/track`, icon: '🎨' }
+        return { text: 'In Production', href: '#', icon: '🎨', disabled: true }
       case 'shipped':
-        return { text: 'Track Delivery', href: `/orders/${orderId}/track`, icon: '🚚' }
+        return { text: 'Shipped', href: '#', icon: '🚚', disabled: true }
       case 'delivered':
         return { text: 'Leave Review', href: `/orders/${orderId}/review`, icon: '⭐' }
       default:
@@ -216,7 +216,12 @@ export default function OrdersPage() {
                           <div className="flex flex-col gap-2">
                             {(() => {
                               const action = getPrimaryAction(order.order_status, order.id)
-                              return (
+                              return action.disabled ? (
+                                <div className="px-3 py-2 bg-gray-200 text-gray-500 font-playfair font-medium rounded-md text-xs flex items-center gap-2 cursor-not-allowed">
+                                  <span>{action.icon}</span>
+                                  <span>{action.text}</span>
+                                </div>
+                              ) : (
                                 <Link
                                   href={action.href}
                                   className="px-3 py-2 bg-deep-gold/80 text-navy font-playfair font-medium rounded-md hover:bg-deep-gold transition-all duration-300 text-xs flex items-center gap-2"
@@ -335,9 +340,9 @@ export default function OrdersPage() {
 
                           {/* Order Actions */}
                           <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-100">
-                            <button className="px-6 py-3 bg-navy text-white font-playfair font-semibold rounded-lg hover:bg-blue-700 transition-colors">
-                              Track This Order
-                            </button>
+                            <div className="px-6 py-3 bg-gray-200 text-gray-500 font-playfair font-semibold rounded-lg cursor-not-allowed">
+                              Order Tracking Not Available
+                            </div>
                             <button className="px-6 py-3 border-2 border-navy text-navy font-playfair font-semibold rounded-lg hover:bg-navy hover:text-white transition-colors">
                               Need Help?
                             </button>

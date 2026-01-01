@@ -287,12 +287,12 @@ export default function WishlistPage() {
             </div>
 
             <div>
-              <h3 className="font-playfair font-bold text-white mb-6 text-lg">Products</h3>
-              <ul className="space-y-3 text-gray-300 font-playfair">
-                <li><Link href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Mugs</Link></li>
-                <li><Link href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">T-Shirts</Link></li>
-                <li><Link href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Pillows</Link></li>
-                <li><Link href="/products" className="hover:text-deep-gold transition-colors duration-300 hover:translate-x-1 inline-block">Custom Items</Link></li>
+              <h3 className="font-playfair font-semibold text-white mb-4">Products</h3>
+              <ul className="space-y-2 text-gray-300 font-playfair text-sm">
+                <li><Link href="/products" className="hover:text-white transition-colors">Mugs</Link></li>
+                <li><Link href="/products" className="hover:text-white transition-colors">T-Shirts</Link></li>
+                <li><Link href="/products" className="hover:text-white transition-colors">Pillows</Link></li>
+                <li><Link href="/products" className="hover:text-white transition-colors">Custom Items</Link></li>
               </ul>
             </div>
 

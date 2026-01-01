@@ -358,20 +358,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="py-16 bg-deep-gold">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl lg:text-4xl font-playfair text-navy mb-6">
-            Still deciding?
-          </h2>
-          <p className="text-xl text-navy font-playfair leading-relaxed mb-8">
-            {"Start with one — we'll guide you through it."}
-          </p>
-          <button className="bg-navy text-white font-playfair font-semibold px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors text-lg">
-            👉 Create Your Gift
-          </button>
-        </div>
-      </section>
+
     </div>
   );
 }

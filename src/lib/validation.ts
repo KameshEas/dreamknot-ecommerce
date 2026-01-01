@@ -206,6 +206,11 @@ export const discountCodeSchemas = {
 
   query: z.object({
     active: z.string().transform(val => val === 'true').optional()
+  }),
+
+  validate: z.object({
+    code: z.string().min(1, 'Discount code is required'),
+    orderTotal: z.number().min(0, 'Order total must be positive')
   })
 }
 

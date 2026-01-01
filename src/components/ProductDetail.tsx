@@ -91,7 +91,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         <nav className="text-sm text-gray-500 font-playfair">
           <Link href="/" className="hover:text-navy transition-colors">Home</Link>
           <span className="mx-2">/</span>
-          <Link href="#products" className="hover:text-navy transition-colors">Products</Link>
+          <Link href="/products" className="hover:text-navy transition-colors">Products</Link>
           <span className="mx-2">/</span>
           <span className="text-gray-900">{product.title}</span>
         </nav>
@@ -260,8 +260,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               </div>
             )}
 
-            {/* Share Preview Hook */}
-            <div className="space-y-6">
+            {/* Share Preview Hook - Hidden until design and preview feature is implemented */}
+            <div className="space-y-6 hidden">
               <div className="bg-deep-gold/10 rounded-2xl p-6 text-center">
                 <h3 className="text-2xl font-playfair text-navy mb-4">This looks great — want to share a preview?</h3>
                 <p className="text-gray-600 font-playfair mb-6">
@@ -426,10 +426,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             <div>
               <h3 className="font-playfair font-semibold text-white mb-4">Products</h3>
               <ul className="space-y-2 text-gray-300 font-playfair text-sm">
-                <li><Link href="/" className="hover:text-white transition-colors">Mugs</Link></li>
-                <li><Link href="/" className="hover:text-white transition-colors">T-Shirts</Link></li>
-                <li><Link href="/" className="hover:text-white transition-colors">Pillows</Link></li>
-                <li><Link href="/" className="hover:text-white transition-colors">Custom Items</Link></li>
+                <li><Link href="/products" className="hover:text-white transition-colors">Mugs</Link></li>
+                <li><Link href="/products" className="hover:text-white transition-colors">T-Shirts</Link></li>
+                <li><Link href="/products" className="hover:text-white transition-colors">Pillows</Link></li>
+                <li><Link href="/products" className="hover:text-white transition-colors">Custom Items</Link></li>
               </ul>
             </div>
 

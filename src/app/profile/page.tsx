@@ -43,6 +43,16 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('profile')
   const [editing, setEditing] = useState(false)
+  const [showAddAddressModal, setShowAddAddressModal] = useState(false)
+  const [addressFormData, setAddressFormData] = useState({
+    name: '',
+    address_line: '',
+    city: '',
+    state: '',
+    zip: '',
+    country: '',
+    is_default: false
+  })
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -131,6 +141,45 @@ export default function ProfilePage() {
     } catch (error) {
       console.error('Delete address error:', error)
       alert('Failed to delete address')
+    }
+  }
+
+  const handleAddAddress = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!addressFormData.name || !addressFormData.address_line || !addressFormData.city || !addressFormData.country) {
+      alert('Please fill in all required fields')
+      return
+    }
+
+    try {
+      const response = await fetch('/api/user/addresses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(addressFormData)
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setAddresses([...addresses, data.address])
+        setShowAddAddressModal(false)
+        setAddressFormData({
+          name: '',
+          address_line: '',
+          city: '',
+          state: '',
+          zip: '',
+          country: '',
+          is_default: false
+        })
+        alert('Address added successfully!')
+      } else {
+        const error = await response.json()
+        alert(`Error: ${error.error}`)
+      }
+    } catch (error) {
+      console.error('Add address error:', error)
+      alert('Failed to add address')
     }
   }
 
@@ -388,7 +437,10 @@ export default function ProfilePage() {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-great-vibes text-navy">Address Book</h2>
-              <button className="px-4 py-2 bg-navy text-white font-playfair font-medium rounded-lg hover:bg-blue-700 transition-colors">
+              <button
+                onClick={() => setShowAddAddressModal(true)}
+                className="px-4 py-2 bg-navy text-white font-playfair font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              >
                 Add New Address
               </button>
             </div>
@@ -559,6 +611,142 @@ export default function ProfilePage() {
           </div>
         </div>
       </footer>
+
+      {/* Add Address Modal */}
+      {showAddAddressModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-great-vibes text-navy">Add New Address</h3>
+                <button
+                  onClick={() => setShowAddAddressModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <form onSubmit={handleAddAddress} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-playfair font-semibold text-navy mb-2">
+                    Address Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={addressFormData.name}
+                    onChange={(e) => setAddressFormData(prev => ({ ...prev, name: e.target.value }))}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent"
+                    placeholder="e.g., Home, Office, etc."
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-playfair font-semibold text-navy mb-2">
+                    Address Line *
+                  </label>
+                  <input
+                    type="text"
+                    value={addressFormData.address_line}
+                    onChange={(e) => setAddressFormData(prev => ({ ...prev, address_line: e.target.value }))}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent"
+                    placeholder="Street address, apartment, etc."
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-playfair font-semibold text-navy mb-2">
+                      City *
+                    </label>
+                    <input
+                      type="text"
+                      value={addressFormData.city}
+                      onChange={(e) => setAddressFormData(prev => ({ ...prev, city: e.target.value }))}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent"
+                      placeholder="City"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-playfair font-semibold text-navy mb-2">
+                      State
+                    </label>
+                    <input
+                      type="text"
+                      value={addressFormData.state}
+                      onChange={(e) => setAddressFormData(prev => ({ ...prev, state: e.target.value }))}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent"
+                      placeholder="State"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-playfair font-semibold text-navy mb-2">
+                      Postal Code
+                    </label>
+                    <input
+                      type="text"
+                      value={addressFormData.zip}
+                      onChange={(e) => setAddressFormData(prev => ({ ...prev, zip: e.target.value }))}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent"
+                      placeholder="Postal Code"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-playfair font-semibold text-navy mb-2">
+                      Country *
+                    </label>
+                    <input
+                      type="text"
+                      value={addressFormData.country}
+                      onChange={(e) => setAddressFormData(prev => ({ ...prev, country: e.target.value }))}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg font-playfair focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent"
+                      placeholder="Country"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="is_default"
+                    checked={addressFormData.is_default}
+                    onChange={(e) => setAddressFormData(prev => ({ ...prev, is_default: e.target.checked }))}
+                    className="rounded border-gray-300 text-navy focus:ring-navy"
+                  />
+                  <label htmlFor="is_default" className="text-sm font-playfair text-gray-700">
+                    Set as default address
+                  </label>
+                </div>
+
+                <div className="flex justify-end space-x-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddAddressModal(false)}
+                    className="px-6 py-3 border border-gray-300 text-gray-700 font-playfair font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-3 bg-navy text-white font-playfair font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Add Address
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
