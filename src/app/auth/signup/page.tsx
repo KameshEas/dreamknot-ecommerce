@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Header from '@/components/Header'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
@@ -115,21 +116,7 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen bg-off-white px-4">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-              <Image
-                src="/logo.svg"
-                alt="DreamKnot Logo"
-                width={40}
-                height={40}
-              />
-              <span className="text-xl font-playfair text-navy">DreamKnot</span>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <div className="max-w-md mx-auto pt-8 pb-16 space-y-8">
         <div className="text-center">

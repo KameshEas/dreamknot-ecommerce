@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Header from '@/components/Header'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 
@@ -71,17 +72,7 @@ export default function OrderConfirmationPage() {
   return (
     <div className="min-h-screen bg-off-white">
       {/* Header */}
-      <header className="bg-navy text-white py-4">
-        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
-          <h1 className="text-3xl font-great-vibes">DreamKnot</h1>
-          <nav className="space-x-6">
-            <Link href="/" className="font-playfair hover:text-light-gold transition-colors">Home</Link>
-            <Link href="/cart" className="font-playfair hover:text-light-gold transition-colors">Cart</Link>
-            <a href="#" className="font-playfair hover:text-light-gold transition-colors">Orders</a>
-            <a href="#" className="font-playfair hover:text-light-gold transition-colors">Login</a>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-md p-8 text-center">
