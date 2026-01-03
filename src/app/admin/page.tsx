@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import Link from 'next/link'
 
 interface Order {
@@ -60,11 +61,11 @@ export default function AdminPage() {
             : order
         ))
       } else {
-        alert('Failed to update order status')
+        toast.error('Failed to update order status')
       }
     } catch (error) {
       console.error('Update order error:', error)
-      alert('Failed to update order status')
+      toast.error('Failed to update order status')
     }
   }
 

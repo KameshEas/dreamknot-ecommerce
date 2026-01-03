@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useWishlistStore } from '@/lib/wishlist-store'
@@ -105,16 +106,16 @@ export default function ProductCard({ product }: ProductCardProps) {
                     })
 
                     if (response.ok) {
-                      alert('Added to cart successfully!')
+                      toast.success('Added to cart successfully!')
                     } else if (response.status === 401) {
-                      alert('Please log in to add items to cart')
+                      toast.error('Please log in to add items to cart')
                     } else {
                       const error = await response.json()
-                      alert(`Error: ${error.error}`)
+                      toast.error(`Error: ${error.error}`)
                     }
                   } catch (error) {
                     console.error('Add to cart error:', error)
-                    alert('Failed to add to cart')
+                    toast.error('Failed to add to cart')
                   }
                 }}
                 className="text-white font-playfair text-sm underline hover:no-underline transition-all duration-200"

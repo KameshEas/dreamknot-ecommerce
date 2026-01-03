@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import toast from 'react-hot-toast'
 import Header from '@/components/Header'
 
 interface CartItem {
@@ -135,7 +136,7 @@ export default function CheckoutPage() {
 
   const handleApplyDiscount = async () => {
     if (!discountCode.trim()) {
-      alert('Please enter a discount code')
+      toast.error('Please enter a discount code')
       return
     }
 
@@ -154,14 +155,14 @@ export default function CheckoutPage() {
 
       if (data.valid) {
         setAppliedDiscount({ amount: data.discount, code: discountCode.trim() })
-        alert(`Discount applied! You saved ₹${data.discount.toFixed(2)}`)
+        toast.success(`Discount applied! You saved ₹${data.discount.toFixed(2)}`)
       } else {
-        alert('Invalid or expired discount code')
+        toast.error('Invalid or expired discount code')
         setAppliedDiscount(null)
       }
     } catch (error) {
       console.error('Discount validation error:', error)
-      alert('Failed to validate discount code')
+      toast.error('Failed to validate discount code')
       setAppliedDiscount(null)
     } finally {
       setDiscountLoading(false)
@@ -226,12 +227,12 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     if (!shippingAddress.name || !shippingAddress.phone || !shippingAddress.address_line_1 || !shippingAddress.city) {
-      alert('Please fill in all required shipping address fields')
+      toast.error('Please fill in all required shipping address fields')
       return
     }
 
     if (!billingAddress.name || !billingAddress.phone || !billingAddress.address_line_1 || !billingAddress.city) {
-      alert('Please fill in all required billing address fields')
+      toast.error('Please fill in all required billing address fields')
       return
     }
 
@@ -248,7 +249,7 @@ export default function CheckoutPage() {
 
       if (!orderResponse.ok) {
         const error = await orderResponse.json()
-        alert(`Error creating payment order: ${error.error}`)
+        toast.error(`Error creating payment order: ${error.error}`)
         setProcessing(false)
         return
       }
@@ -257,7 +258,7 @@ export default function CheckoutPage() {
 
       // Check if Razorpay is loaded
       if (!window.Razorpay) {
-        alert('Razorpay SDK not loaded. Please refresh the page and try again.')
+        toast.error('Razorpay SDK not loaded. Please refresh the page and try again.')
         setProcessing(false)
         return
       }
@@ -316,12 +317,12 @@ export default function CheckoutPage() {
               setProcessing(false)
             } else {
               const error = await verifyResponse.json()
-              alert(`Payment verification failed: ${error.error}`)
+              toast.error(`Payment verification failed: ${error.error}`)
               setProcessing(false)
             }
           } catch (error) {
             console.error('Payment verification error:', error)
-            alert('Payment verification failed')
+            toast.error('Payment verification failed')
             setProcessing(false)
           }
         },
@@ -345,12 +346,12 @@ export default function CheckoutPage() {
         rzp.open()
       } catch (razorpayError) {
         console.error('Razorpay initialization error:', razorpayError)
-        alert('Failed to initialize payment gateway. Please try again.')
+        toast.error('Failed to initialize payment gateway. Please try again.')
         setProcessing(false)
       }
     } catch (error) {
       console.error('Place order error:', error)
-      alert('Failed to initiate payment')
+      toast.error('Failed to initiate payment')
       setProcessing(false)
     }
   }

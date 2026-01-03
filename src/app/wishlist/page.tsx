@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import Image from 'next/image'
 import Link from 'next/link'
 import Header from '@/components/Header'
@@ -36,7 +37,7 @@ export default function WishlistPage() {
         const data = await response.json()
         setWishlist(data.wishlist)
       } else if (response.status === 401) {
-        alert('Please log in to view your wishlist')
+        toast.error('Please log in to view your wishlist')
       }
     } catch (error) {
       console.error('Fetch wishlist error:', error)
@@ -56,11 +57,11 @@ export default function WishlistPage() {
       if (response.ok) {
         setWishlist(wishlist.filter(item => item.product.id !== productId))
       } else {
-        alert('Failed to remove from wishlist')
+        toast.error('Failed to remove from wishlist')
       }
     } catch (error) {
       console.error('Remove from wishlist error:', error)
-      alert('Failed to remove from wishlist')
+      toast.error('Failed to remove from wishlist')
     }
   }
 
@@ -76,16 +77,16 @@ export default function WishlistPage() {
       })
 
       if (response.ok) {
-        alert('Added to cart successfully!')
+        toast.success('Added to cart successfully!')
       } else if (response.status === 401) {
-        alert('Please log in to add items to cart')
+        toast.error('Please log in to add items to cart')
       } else {
         const error = await response.json()
-        alert(`Error: ${error.error}`)
+        toast.error(`Error: ${error.error}`)
       }
     } catch (error) {
       console.error('Add to cart error:', error)
-      alert('Failed to add to cart')
+      toast.error('Failed to add to cart')
     }
   }
 

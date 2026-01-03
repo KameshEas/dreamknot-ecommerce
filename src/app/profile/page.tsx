@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import Header from '@/components/Header'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -115,13 +116,13 @@ export default function ProfilePage() {
       if (response.ok) {
         await fetchProfile()
         setEditing(false)
-        alert('Profile updated successfully!')
+        toast.success('Profile updated successfully!')
       } else {
-        alert('Failed to update profile')
+        toast.error('Failed to update profile')
       }
     } catch (error) {
       console.error('Update profile error:', error)
-      alert('Failed to update profile')
+      toast.error('Failed to update profile')
     }
   }
 
@@ -136,11 +137,11 @@ export default function ProfilePage() {
       if (response.ok) {
         setAddresses(addresses.filter(addr => addr.id !== addressId))
       } else {
-        alert('Failed to delete address')
+        toast.error('Failed to delete address')
       }
     } catch (error) {
       console.error('Delete address error:', error)
-      alert('Failed to delete address')
+      toast.error('Failed to delete address')
     }
   }
 
@@ -148,7 +149,7 @@ export default function ProfilePage() {
     e.preventDefault()
 
     if (!addressFormData.name || !addressFormData.address_line || !addressFormData.city || !addressFormData.country) {
-      alert('Please fill in all required fields')
+      toast.error('Please fill in all required fields')
       return
     }
 
@@ -172,14 +173,14 @@ export default function ProfilePage() {
           country: '',
           is_default: false
         })
-        alert('Address added successfully!')
+        toast.success('Address added successfully!')
       } else {
         const error = await response.json()
-        alert(`Error: ${error.error}`)
+        toast.error(`Error: ${error.error}`)
       }
     } catch (error) {
       console.error('Add address error:', error)
-      alert('Failed to add address')
+      toast.error('Failed to add address')
     }
   }
 
@@ -538,13 +539,13 @@ export default function ProfilePage() {
                       })
 
                       if (response.ok) {
-                        alert('Preferences updated successfully!')
+                        toast.success('Preferences updated successfully!')
                       } else {
-                        alert('Failed to update preferences')
+                        toast.error('Failed to update preferences')
                       }
                     } catch (error) {
                       console.error('Update preferences error:', error)
-                      alert('Failed to update preferences')
+                      toast.error('Failed to update preferences')
                     }
                   }}
                   className="px-6 py-3 bg-navy text-white font-playfair font-medium rounded-lg hover:bg-blue-700 transition-colors"

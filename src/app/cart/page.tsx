@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import Image from 'next/image'
 import Link from 'next/link'
 import Header from '@/components/Header'
@@ -39,7 +40,7 @@ export default function CartPage() {
         const data = await response.json()
         setCart(data)
       } else if (response.status === 401) {
-        alert('Please log in to view your cart')
+        toast.error('Please log in to view your cart')
       }
     } catch (error) {
       console.error('Fetch cart error:', error)
@@ -61,11 +62,11 @@ export default function CartPage() {
       if (response.ok) {
         fetchCart() // Refresh cart data
       } else {
-        alert('Failed to update quantity')
+        toast.error('Failed to update quantity')
       }
     } catch (error) {
       console.error('Update quantity error:', error)
-      alert('Failed to update quantity')
+      toast.error('Failed to update quantity')
     }
   }
 
@@ -80,11 +81,11 @@ export default function CartPage() {
       if (response.ok) {
         fetchCart() // Refresh cart data
       } else {
-        alert('Failed to remove item')
+        toast.error('Failed to remove item')
       }
     } catch (error) {
       console.error('Remove item error:', error)
-      alert('Failed to remove item')
+      toast.error('Failed to remove item')
     }
   }
 

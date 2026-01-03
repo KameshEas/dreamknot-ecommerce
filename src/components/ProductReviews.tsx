@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import Image from 'next/image'
 import StarRating from './StarRating'
 
@@ -74,16 +75,16 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
         await fetchReviews()
         setNewReview({ rating: 5, title: '', comment: '' })
         setShowReviewForm(false)
-        alert('Review submitted successfully!')
+        toast.success('Review submitted successfully!')
       } else if (response.status === 401) {
-        alert('Please log in to submit a review')
+        toast.error('Please log in to submit a review')
       } else {
         const error = await response.json()
-        alert(error.error || 'Failed to submit review')
+        toast.error(error.error || 'Failed to submit review')
       }
     } catch (error) {
       console.error('Submit review error:', error)
-      alert('Failed to submit review')
+      toast.error('Failed to submit review')
     } finally {
       setSubmittingReview(false)
     }

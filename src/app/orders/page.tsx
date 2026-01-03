@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import Header from '@/components/Header'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -55,7 +56,7 @@ export default function OrdersPage() {
         const data = await response.json()
         setOrders(data.orders)
       } else if (response.status === 401) {
-        alert('Please log in to view your orders')
+        toast.error('Please log in to view your orders')
       }
     } catch (error) {
       console.error('Fetch orders error:', error)
