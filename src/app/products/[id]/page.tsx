@@ -19,7 +19,7 @@ interface Product {
 
 async function getProduct(id: string): Promise<Product | null> {
   try {
-    const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://api.dreamknot.co.in'
+    const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'https://api.dreamknot.co.in'
     const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN
 
     // Fetch from Strapi using filters like the API route does

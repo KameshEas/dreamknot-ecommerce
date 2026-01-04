@@ -15,7 +15,7 @@ export interface CategoriesResponse {
 }
 
 export class CategoriesService {
-  private static readonly STRAPI_URL = process.env.STRAPI_URL || 'http://api.dreamknot.co.in'
+  private static readonly STRAPI_URL = process.env.STRAPI_URL || 'https://api.dreamknot.co.in'
   private static readonly STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN
 
   // Fallback categories for development/demo
