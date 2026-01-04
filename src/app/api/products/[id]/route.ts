@@ -79,6 +79,19 @@ export async function GET(
     return NextResponse.json({ product })
   } catch (error) {
     console.error('Product fetch error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    // Return a fallback product when Strapi is unavailable
+    return NextResponse.json({ 
+      product: {
+        id: productId,
+        title: 'Product Unavailable',
+        description: 'This product is temporarily unavailable. Please try again later.',
+        base_price: 0,
+        category_id: null,
+        images: ['/placeholder-product.jpg'],
+        created_at: new Date().toISOString(),
+        category: null,
+        customizations: []
+      }
+    })
   }
 }

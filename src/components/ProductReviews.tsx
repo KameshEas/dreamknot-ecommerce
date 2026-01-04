@@ -47,11 +47,15 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
 
   const fetchReviews = async () => {
     try {
-      const response = await fetch(`/api/products/${productId}/reviews`)
+      const response = await fetch(`/api/product-reviews?productId=${productId}&sortBy=newest&page=1&limit=10`)
       if (response.ok) {
         const data = await response.json()
         setReviews(data.reviews)
-        setStats(data.stats)
+        setStats({
+          total: data.stats.totalReviews,
+          average: data.stats.averageRating,
+          distribution: data.stats.ratingDistribution
+        })
       }
     } catch (error) {
       console.error('Fetch reviews error:', error)
@@ -65,10 +69,15 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
     setSubmittingReview(true)
 
     try {
-      const response = await fetch(`/api/products/${productId}/reviews`, {
+      const response = await fetch(`/api/product-reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newReview)
+        body: JSON.stringify({
+          product_id: productId,
+          rating: newReview.rating,
+          title: newReview.title,
+          comment: newReview.comment
+        })
       })
 
       if (response.ok) {

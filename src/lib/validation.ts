@@ -241,3 +241,19 @@ export const addressSchemas = {
     is_default: z.boolean().optional()
   })
 }
+
+export const reviewSchemas = {
+  create: z.object({
+    product_id: z.number(),
+    rating: z.number().min(1).max(5),
+    title: z.string().optional(),
+    comment: z.string().optional()
+  }),
+
+  query: z.object({
+    productId: z.string().transform(val => parseInt(val)),
+    sortBy: z.enum(['newest', 'oldest', 'highest', 'lowest', 'helpful']).optional(),
+    page: z.string().transform(val => parseInt(val) || 1).optional(),
+    limit: z.string().transform(val => parseInt(val) || 10).optional()
+  })
+}

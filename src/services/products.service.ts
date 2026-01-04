@@ -69,110 +69,124 @@ export class ProductsService {
       featured
     } = query
 
-    // Build Strapi query parameters
-    const params = new URLSearchParams()
+    try {
+      // Build Strapi query parameters
+      const params = new URLSearchParams()
 
-    // Populate relations
-    params.append('populate[category]', 'true')
-    params.append('populate[images]', 'true')
+      // Populate relations
+      params.append('populate[category]', 'true')
+      params.append('populate[images]', 'true')
 
-    // Search functionality
-    if (search) {
-      params.append('filters[$or][0][title][$containsi]', search)
-      params.append('filters[$or][1][description][$containsi]', search)
-    }
-
-    // Featured filter
-    if (featured) {
-      params.append('filters[featured][$eq]', 'true')
-    }
-
-    // Price range filter
-    if (minPrice !== undefined) {
-      params.append('filters[base_price][$gte]', minPrice.toString())
-    }
-    if (maxPrice !== undefined) {
-      params.append('filters[base_price][$lte]', maxPrice.toString())
-    }
-
-    // Sorting
-    switch (sortBy) {
-      case 'price-low':
-        params.append('sort', 'base_price:asc')
-        break
-      case 'price-high':
-        params.append('sort', 'base_price:desc')
-        break
-      case 'name':
-        params.append('sort', 'title:asc')
-        break
-      case 'newest':
-      default:
-        params.append('sort', 'createdAt:desc')
-        break
-    }
-
-    // Pagination
-    params.append('pagination[page]', page.toString())
-    params.append('pagination[pageSize]', limit.toString())
-
-    // Fetch from Strapi
-    const response = await fetch(`${this.STRAPI_URL}/api/products?${params.toString()}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(this.STRAPI_API_TOKEN && { 'Authorization': `Bearer ${this.STRAPI_API_TOKEN}` })
+      // Search functionality
+      if (search) {
+        params.append('filters[$or][0][title][$containsi]', search)
+        params.append('filters[$or][1][description][$containsi]', search)
       }
-    })
 
-    if (!response.ok) {
-      throw new Error(`Strapi API error: ${response.status}`)
-    }
+      // Featured filter
+      if (featured) {
+        params.append('filters[featured][$eq]', 'true')
+      }
 
-    const data = await response.json()
+      // Price range filter
+      if (minPrice !== undefined) {
+        params.append('filters[base_price][$gte]', minPrice.toString())
+      }
+      if (maxPrice !== undefined) {
+        params.append('filters[base_price][$lte]', maxPrice.toString())
+      }
 
-    // Transform Strapi response to match expected format
-    const transformedProducts = data.data.map((item: StrapiProduct) => ({
-      id: item.id,
-      title: item.title,
-      description: item.description,
-      base_price: parseFloat(item.base_price),
-      category_id: item.category?.id || null,
-      images: item.images?.map((img: StrapiImage) => {
-        // Handle different URL formats from Strapi
-        if (!img.url) return '/placeholder-product.jpg'
+      // Sorting
+      switch (sortBy) {
+        case 'price-low':
+          params.append('sort', 'base_price:asc')
+          break
+        case 'price-high':
+          params.append('sort', 'base_price:desc')
+          break
+        case 'name':
+          params.append('sort', 'title:asc')
+          break
+        case 'newest':
+        default:
+          params.append('sort', 'createdAt:desc')
+          break
+      }
 
-        if (img.url.startsWith('http://') || img.url.startsWith('https://')) {
-          // Already a full URL
-          return img.url
-        } else if (img.url.startsWith('/uploads/')) {
-          // Strapi relative URL - convert to full URL
-          return `${this.STRAPI_URL}${img.url}`
-        } else if (img.url.startsWith('/')) {
-          // Local URL (mock data)
-          return img.url
-        } else {
-          // Any other relative URL from Strapi
-          return `${this.STRAPI_URL}/uploads/${img.url}`
+      // Pagination
+      params.append('pagination[page]', page.toString())
+      params.append('pagination[pageSize]', limit.toString())
+
+      // Fetch from Strapi
+      const response = await fetch(`${this.STRAPI_URL}/api/products?${params.toString()}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(this.STRAPI_API_TOKEN && { 'Authorization': `Bearer ${this.STRAPI_API_TOKEN}` })
         }
-      }) || ['/placeholder-product.jpg'],
-      created_at: item.createdAt,
-      category: item.category ? {
-        id: item.category.id,
-        name: item.category.name,
-        created_at: item.category.createdAt
-      } : null,
-      customizations: [] // Will be handled separately if needed
-    }))
+      })
 
-    const pagination = data.meta.pagination
+      if (!response.ok) {
+        throw new Error(`Strapi API error: ${response.status}`)
+      }
 
-    return {
-      products: transformedProducts,
-      pagination: {
-        page: pagination.page,
-        limit: pagination.pageSize,
-        total: pagination.total,
-        pages: pagination.pageCount
+      const data = await response.json()
+
+      // Transform Strapi response to match expected format
+      const transformedProducts = data.data.map((item: StrapiProduct) => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        base_price: parseFloat(item.base_price),
+        category_id: item.category?.id || null,
+        images: item.images?.map((img: StrapiImage) => {
+          // Handle different URL formats from Strapi
+          if (!img.url) return '/placeholder-product.jpg'
+
+          if (img.url.startsWith('http://') || img.url.startsWith('https://')) {
+            // Already a full URL
+            return img.url
+          } else if (img.url.startsWith('/uploads/')) {
+            // Strapi relative URL - convert to full URL
+            return `${this.STRAPI_URL}${img.url}`
+          } else if (img.url.startsWith('/')) {
+            // Local URL (mock data)
+            return img.url
+          } else {
+            // Any other relative URL from Strapi
+            return `${this.STRAPI_URL}/uploads/${img.url}`
+          }
+        }) || ['/placeholder-product.jpg'],
+        created_at: item.createdAt,
+        category: item.category ? {
+          id: item.category.id,
+          name: item.category.name,
+          created_at: item.category.createdAt
+        } : null,
+        customizations: [] // Will be handled separately if needed
+      }))
+
+      const pagination = data.meta.pagination
+
+      return {
+        products: transformedProducts,
+        pagination: {
+          page: pagination.page,
+          limit: pagination.pageSize,
+          total: pagination.total,
+          pages: pagination.pageCount
+        }
+      }
+    } catch (error) {
+      console.error('Strapi API error:', error)
+      // Return fallback empty response when Strapi is unavailable
+      return {
+        products: [],
+        pagination: {
+          page: 1,
+          limit: limit,
+          total: 0,
+          pages: 0
+        }
       }
     }
   }
