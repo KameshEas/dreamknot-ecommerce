@@ -6,7 +6,8 @@ interface StrapiProduct {
   id: number
   title: string
   description: string
-  base_price: string
+  discounted_price: number
+  original_price: number
   createdAt: string
   category?: {
     id: number
@@ -14,6 +15,9 @@ interface StrapiProduct {
     createdAt: string
   }
   images?: StrapiImage[]
+  averageRating?: number
+  reviewCount?: number
+  featured?: boolean
 }
 
 export interface Product {
@@ -90,19 +94,19 @@ export class ProductsService {
 
       // Price range filter
       if (minPrice !== undefined) {
-        params.append('filters[base_price][$gte]', minPrice.toString())
+        params.append('filters[discounted_price][$gte]', minPrice.toString())
       }
       if (maxPrice !== undefined) {
-        params.append('filters[base_price][$lte]', maxPrice.toString())
+        params.append('filters[discounted_price][$lte]', maxPrice.toString())
       }
 
       // Sorting
       switch (sortBy) {
         case 'price-low':
-          params.append('sort', 'base_price:asc')
+          params.append('sort', 'discounted_price:asc')
           break
         case 'price-high':
-          params.append('sort', 'base_price:desc')
+          params.append('sort', 'discounted_price:desc')
           break
         case 'name':
           params.append('sort', 'title:asc')
@@ -136,7 +140,7 @@ export class ProductsService {
         id: item.id,
         title: item.title,
         description: item.description,
-        base_price: parseFloat(item.base_price),
+        base_price: parseFloat(item.discounted_price.toString()),
         category_id: item.category?.id || null,
         images: item.images?.map((img: StrapiImage) => {
           // Handle different URL formats from Strapi

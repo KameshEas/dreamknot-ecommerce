@@ -7,6 +7,24 @@ interface StrapiImage {
   url: string
 }
 
+interface StrapiProduct {
+  id: number
+  title: string
+  description: string
+  discounted_price: number
+  original_price: number
+  createdAt: string
+  category?: {
+    id: number
+    name: string
+    createdAt: string
+  }
+  images?: StrapiImage[]
+  averageRating?: number
+  reviewCount?: number
+  featured?: boolean
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -49,7 +67,7 @@ export async function GET(
       id: item.id,
       title: item.title,
       description: item.description,
-      base_price: parseFloat(item.base_price),
+      base_price: parseFloat(item.discounted_price.toString()),
       category_id: item.category?.id || null,
       images: item.images?.map((img: StrapiImage) => {
         // Handle different URL formats from Strapi
