@@ -128,7 +128,7 @@ export default function FeaturedProducts() {
                 {/* Price with microcopy */}
                 <div className="space-y-1">
                   <p className="text-xl font-playfair text-navy">
-                    ₹{product.base_price.toFixed(2)}
+                    ₹{(product.base_price || 0).toFixed(2)}
                   </p>
                   <p className="text-xs text-gray-500 font-playfair">
                     Made after design approval

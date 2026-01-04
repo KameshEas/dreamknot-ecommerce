@@ -182,7 +182,7 @@ export default function WishlistPage() {
                       <div className="flex items-center justify-between mb-4">
                         <div>
                           <span className="text-2xl font-playfair font-bold text-navy">
-                            ₹{item.product.base_price.toFixed(2)}
+                            ₹{(item.product.base_price || 0).toFixed(2)}
                           </span>
                           <p className="text-xs text-gray-500 font-playfair">Starting price</p>
                         </div>
