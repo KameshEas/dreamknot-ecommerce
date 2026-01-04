@@ -11,9 +11,11 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  let productId: number = 0
+  
   try {
     const { id } = await params
-    const productId = parseInt(id)
+    productId = parseInt(id)
 
     if (isNaN(productId)) {
       return NextResponse.json({ error: 'Invalid product ID' }, { status: 400 })
@@ -82,7 +84,7 @@ export async function GET(
     // Return a fallback product when Strapi is unavailable
     return NextResponse.json({ 
       product: {
-        id: productId,
+        id: productId || 0,
         title: 'Product Unavailable',
         description: 'This product is temporarily unavailable. Please try again later.',
         base_price: 0,
