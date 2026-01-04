@@ -191,7 +191,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-4xl font-playfair font-bold text-navy">
-                    ₹{product.base_price.toFixed(2)}
+                    ₹{(product.base_price || 0).toFixed(2)}
                   </span>
                   <div className="space-y-1 mt-1">
                     <p className="text-sm text-gray-500 font-playfair">Made to order</p>
@@ -392,7 +392,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               <div className="flex items-center justify-between py-4 border-t border-gray-200">
                 <span className="text-lg font-playfair text-gray-600">Total:</span>
                 <span className="text-2xl font-playfair font-bold text-navy">
-                  ₹{(product.base_price * quantity).toFixed(2)}
+                  ₹{((product.base_price || 0) * quantity).toFixed(2)}
                 </span>
               </div>
 
