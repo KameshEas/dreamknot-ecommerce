@@ -72,7 +72,7 @@ export default function StarRating({
 
       {showValue && (
         <span className="text-sm text-gray-600 font-playfair ml-2">
-          ({rating.toFixed(1)})
+          ({(rating || 0).toFixed(1)})
         </span>
       )}
     </div>

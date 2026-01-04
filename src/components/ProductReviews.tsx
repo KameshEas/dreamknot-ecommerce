@@ -234,7 +234,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
           <div className="grid md:grid-cols-2 gap-8">
             <div className="text-center">
               <div className="text-4xl font-playfair font-bold text-navy mb-2">
-                {stats.average.toFixed(1)}
+                {(stats.average || 0).toFixed(1)}
               </div>
               <StarRating rating={stats.average} readonly size="lg" />
               <div className="text-gray-600 font-playfair mt-4">
