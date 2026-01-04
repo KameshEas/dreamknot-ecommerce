@@ -281,6 +281,7 @@ model Wishlist {
   // Relations
   user User @relation(fields: [user_id], references: [id])
   // Note: product_id references external Strapi products, not local Product model
+  // No foreign key constraint to avoid issues with external product references
 
   @@unique([user_id, product_id])
   @@map("wishlists")

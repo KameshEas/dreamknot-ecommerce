@@ -59,9 +59,8 @@ export class WishlistService {
   static async addToWishlist(userId: number, data: AddToWishlistData): Promise<void> {
     const { productId } = data
 
-    // Check if product exists
-    const productsResult = await ProductsService.getProducts({ limit: 1000 })
-    const product = productsResult.products.find(p => p.id === productId)
+    // Check if product exists in Strapi
+    const product = await ProductsService.getProductById(productId)
 
     if (!product) {
       throw new NotFoundError('Product')

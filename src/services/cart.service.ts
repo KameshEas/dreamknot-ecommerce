@@ -20,6 +20,7 @@ export interface AddToCartData {
   productId: number
   customization?: any
   qty?: number
+  allowQuantityIncrease?: boolean // If false, will add as new item even if exists
 }
 
 export interface UpdateCartItemData {
@@ -89,7 +90,7 @@ export class CartService {
   }
 
   static async addToCart(userId: number, data: AddToCartData): Promise<void> {
-    const { productId, customization, qty = 1 } = data
+    const { productId, customization, qty = 1, allowQuantityIncrease = true } = data
 
     // Find or create cart
     let cart = await prisma.cart.findFirst({
@@ -111,14 +112,14 @@ export class CartService {
       }
     })
 
-    if (existingItem) {
-      // Update quantity
+    if (existingItem && allowQuantityIncrease) {
+      // Update quantity only if allowed
       await prisma.cartItem.update({
         where: { id: existingItem.id },
         data: { qty: existingItem.qty + qty }
       })
     } else {
-      // Create new item
+      // Create new item (either no existing item or quantity increase not allowed)
       await prisma.cartItem.create({
         data: {
           cart_id: cart.id,
@@ -221,5 +222,24 @@ export class CartService {
     })
 
     return cart?._count.cart_items || 0
+  }
+
+  static async isProductInCart(userId: number, productId: number): Promise<boolean> {
+    const cart = await prisma.cart.findFirst({
+      where: { user_id: userId }
+    })
+
+    if (!cart) {
+      return false
+    }
+
+    const existingItem = await prisma.cartItem.findFirst({
+      where: {
+        cart_id: cart.id,
+        product_id: productId
+      }
+    })
+
+    return !!existingItem
   }
 }

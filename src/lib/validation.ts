@@ -152,7 +152,8 @@ export const cartSchemas = {
   addItem: z.object({
     productId: z.number(),
     customization: z.any().optional(),
-    qty: z.number().min(1).optional()
+    qty: z.number().min(1).optional(),
+    allowQuantityIncrease: z.boolean().optional()
   }),
 
   updateItem: z.object({

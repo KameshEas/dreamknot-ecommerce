@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -35,8 +35,31 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   const [selectedImage, setSelectedImage] = useState(0)
   const [customizations, setCustomizations] = useState<Record<string, CustomizationValue>>({})
   const [quantity, setQuantity] = useState(1)
+  const [isInCart, setIsInCart] = useState(false)
+  const [cartLoading, setCartLoading] = useState(false)
   const isWishlisted = isInWishlist(product.id)
   const isLoading = addLoading[product.id] || removeLoading[product.id]
+
+  // Check if product is already in cart
+  useEffect(() => {
+    const checkCartStatus = async () => {
+      try {
+        setCartLoading(true)
+        const response = await fetch('/api/cart')
+        if (response.ok) {
+          const cartData = await response.json()
+          const isProductInCart = cartData.items.some((item: any) => item.product.id === product.id)
+          setIsInCart(isProductInCart)
+        }
+      } catch (error) {
+        console.error('Error checking cart status:', error)
+      } finally {
+        setCartLoading(false)
+      }
+    }
+
+    checkCartStatus()
+  }, [product.id])
 
   const handleCustomizationChange = (type: string, value: CustomizationValue) => {
     setCustomizations(prev => ({
@@ -64,12 +87,15 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         body: JSON.stringify({
           productId: product.id,
           customization: customizations,
-          qty: quantity
+          qty: quantity,
+          allowQuantityIncrease: false // Prevent quantity increase from product detail page
         })
       })
 
       if (response.ok) {
         toast.success('Added to cart successfully!')
+        // Update cart status to reflect the change
+        setIsInCart(true)
       } else if (response.status === 401) {
         toast.error('Please log in to add items to cart')
       } else {
@@ -361,11 +387,31 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                 </span>
               </div>
 
+              {/* Show message if product is already in cart */}
+              {isInCart && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center space-x-3">
+                    <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <div>
+                      <p className="font-playfair font-semibold text-green-800">Product already in cart</p>
+                      <p className="text-sm text-green-600 font-playfair">You can view and manage your cart items</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <button
                 onClick={handleAddToCart}
-                className="w-full py-4 bg-navy text-white font-playfair font-semibold text-lg rounded-lg hover:bg-blue-700 transition-colors"
+                disabled={cartLoading}
+                className={`w-full py-4 font-playfair font-semibold text-lg rounded-lg transition-colors ${
+                  isInCart 
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                    : 'bg-navy text-white hover:bg-blue-700'
+                }`}
               >
-                Add to Cart
+                {cartLoading ? 'Checking...' : isInCart ? 'Already in Cart' : 'Add to Cart'}
               </button>
 
               <div className="text-center">
