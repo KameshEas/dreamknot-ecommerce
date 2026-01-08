@@ -54,7 +54,7 @@ export class CartService {
     const productsResult = await ProductsService.getProducts({ limit: 1000 })
     const products = productsResult.products
 
-    // Process cart items
+      // Process cart items
     const items = cart.cart_items.map((item) => {
       const product = products.find(p => p.id === item.product_id)
 
@@ -63,11 +63,32 @@ export class CartService {
         id: item.product_id,
         title: 'Product Unavailable',
         description: 'This product is no longer available.',
-        base_price: 0,
-        category_id: null,
+        original_price: 0,
+        discounted_price: 0,
+        ean: undefined,
+        upc: undefined,
         images: ['/placeholder-product.jpg'],
-        created_at: new Date().toISOString(),
         category: null,
+        slug: '',
+        featured: false,
+        delivery_option: null,
+        stock_quantity: 0,
+        is_available: true,
+        sku: '',
+        weight: undefined,
+        weight_unit: null,
+        dimensions: undefined,
+        low_stock_threshold: 5,
+        allow_backorders: false,
+        track_inventory: true,
+        averageRating: 0,
+        reviewCount: 0,
+        product_type: 'physical',
+        requires_shipping: true,
+        taxable: true,
+        tags: undefined,
+        meta_description: undefined,
+        meta_keywords: undefined,
         customizations: []
       }
 
@@ -76,7 +97,7 @@ export class CartService {
         product: finalProduct,
         customization: item.customization,
         qty: item.qty,
-        price: finalProduct.base_price * item.qty
+        price: finalProduct.discounted_price * item.qty
       }
     })
 

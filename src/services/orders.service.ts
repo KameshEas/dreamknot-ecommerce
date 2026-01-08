@@ -106,7 +106,7 @@ export class OrdersService {
     // Calculate total
     const total_amount = cart.cart_items.reduce((sum, item) => {
       const product = products.find(p => p.id === item.product_id)
-      const price = product ? product.base_price : 0
+      const price = product ? product.discounted_price : 0
       return sum + (price * item.qty)
     }, 0)
 
@@ -184,7 +184,7 @@ export class OrdersService {
     // Calculate total
     const total_amount = cart.cart_items.reduce((sum, item) => {
       const product = products.find(p => p.id === item.product_id)
-      const price = product ? product.base_price : 0
+      const price = product ? product.discounted_price : 0
       return sum + (price * item.qty)
     }, 0)
 
@@ -208,7 +208,7 @@ export class OrdersService {
     await prisma.orderItem.createMany({
       data: cart.cart_items.map((item) => {
         const product = products.find(p => p.id === item.product_id)
-        const price = product ? product.base_price : 0
+        const price = product ? product.discounted_price : 0
         return {
           order_id: order.id,
           product_id: item.product_id,
@@ -259,11 +259,32 @@ export class OrdersService {
           id: item.product_id,
           title: 'Product Unavailable',
           description: 'This product is no longer available.',
-          base_price: 0,
-          category_id: null,
+          original_price: 0,
+          discounted_price: 0,
+          ean: undefined,
+          upc: undefined,
           images: ['/placeholder-product.jpg'],
-          created_at: new Date().toISOString(),
           category: null,
+          slug: '',
+          featured: false,
+          delivery_option: null,
+          stock_quantity: 0,
+          is_available: true,
+          sku: '',
+          weight: undefined,
+          weight_unit: null,
+          dimensions: undefined,
+          low_stock_threshold: 5,
+          allow_backorders: false,
+          track_inventory: true,
+          averageRating: 0,
+          reviewCount: 0,
+          product_type: 'physical',
+          requires_shipping: true,
+          taxable: true,
+          tags: undefined,
+          meta_description: undefined,
+          meta_keywords: undefined,
           customizations: []
         }
 
@@ -272,7 +293,7 @@ export class OrdersService {
           product: finalProduct,
           customization: item.customization_json,
           qty: item.qty,
-          price: finalProduct.base_price * item.qty
+          price: finalProduct.discounted_price * item.qty
         }
       })
 
@@ -353,7 +374,7 @@ export class OrdersService {
         customerEmail: user.email,
         totalAmount: cartItems.reduce((sum, item) => {
           const product = products.find(p => p.id === item.product_id)
-          return sum + ((product?.base_price || 0) * item.qty)
+          return sum + ((product?.discounted_price || 0) * item.qty)
         }, 0),
         shippingAddress: {
           name: shipping_address.name,
@@ -379,7 +400,7 @@ export class OrdersService {
             },
             customization_json: item.customization,
             qty: item.qty,
-            price: product?.base_price || 0
+            price: product?.discounted_price || 0
           }
         })
       }

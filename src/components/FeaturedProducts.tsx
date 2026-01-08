@@ -8,11 +8,35 @@ interface Product {
   id: number
   title: string
   description: string
-  base_price: number
+  original_price: number
+  discounted_price: number
+  ean?: string
+  upc?: string
   images: string[]
   category: {
+    id: number
     name: string
-  }
+  } | null
+  slug: string
+  featured: boolean
+  delivery_option: 'two_day' | 'standard' | 'express' | null
+  stock_quantity: number
+  is_available: boolean
+  sku: string
+  weight?: number
+  weight_unit: 'kg' | 'g' | 'lb' | 'oz' | null
+  dimensions?: string
+  low_stock_threshold: number
+  allow_backorders: boolean
+  track_inventory: boolean
+  averageRating: number
+  reviewCount: number
+  product_type: 'physical' | 'digital' | 'service'
+  requires_shipping: boolean
+  taxable: boolean
+  tags?: string
+  meta_description?: string
+  meta_keywords?: string
 }
 
 interface ProductsResponse {
@@ -127,11 +151,21 @@ export default function FeaturedProducts() {
 
                 {/* Price with microcopy */}
                 <div className="space-y-1">
+                  {product.original_price && product.discounted_price && product.discounted_price < product.original_price && (
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg font-playfair text-gray-500 line-through">
+                        ₹{product.original_price.toFixed(2)}
+                      </span>
+                      <span className="bg-deep-gold text-white px-2 py-1 text-xs font-playfair rounded">
+                        {Math.round(((product.original_price - product.discounted_price) / product.original_price) * 100)}% OFF
+                      </span>
+                    </div>
+                  )}
                   <p className="text-xl font-playfair text-navy">
-                    ₹{(product.base_price || 0).toFixed(2)}
+                    ₹{(product.discounted_price || product.original_price || 0).toFixed(2)}
                   </p>
                   <p className="text-xs text-gray-500 font-playfair">
-                    Made after design approval
+                    {product.product_type === 'digital' ? 'Instant delivery' : 'Made after design approval'}
                   </p>
                 </div>
 

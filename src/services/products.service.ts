@@ -8,6 +8,8 @@ interface StrapiProduct {
   description: string
   discounted_price: number
   original_price: number
+  ean?: string
+  upc?: string
   createdAt: string
   category?: {
     id: number
@@ -18,21 +20,58 @@ interface StrapiProduct {
   averageRating?: number
   reviewCount?: number
   featured?: boolean
+  slug?: string
+  delivery_option?: 'two_day' | 'standard' | 'express' | null
+  stock_quantity?: number
+  is_available?: boolean
+  sku?: string
+  weight?: number
+  weight_unit?: 'kg' | 'g' | 'lb' | 'oz' | null
+  dimensions?: string
+  low_stock_threshold?: number
+  allow_backorders?: boolean
+  track_inventory?: boolean
+  product_type?: 'physical' | 'digital' | 'service'
+  requires_shipping?: boolean
+  taxable?: boolean
+  tags?: string
+  meta_description?: string
+  meta_keywords?: string
 }
 
 export interface Product {
   id: number
   title: string
   description: string
-  base_price: number
-  category_id: number | null
+  original_price: number
+  discounted_price: number
+  ean?: string
+  upc?: string
   images: string[]
-  created_at: string
   category: {
     id: number
     name: string
-    created_at: string
   } | null
+  slug: string
+  featured: boolean
+  delivery_option: 'two_day' | 'standard' | 'express' | null
+  stock_quantity: number
+  is_available: boolean
+  sku: string
+  weight?: number
+  weight_unit: 'kg' | 'g' | 'lb' | 'oz' | null
+  dimensions?: string
+  low_stock_threshold: number
+  allow_backorders: boolean
+  track_inventory: boolean
+  averageRating: number
+  reviewCount: number
+  product_type: 'physical' | 'digital' | 'service'
+  requires_shipping: boolean
+  taxable: boolean
+  tags?: string
+  meta_description?: string
+  meta_keywords?: string
   customizations: any[]
 }
 
@@ -140,8 +179,10 @@ export class ProductsService {
         id: item.id,
         title: item.title,
         description: item.description,
-        base_price: parseFloat(item.discounted_price.toString()),
-        category_id: item.category?.id || null,
+        original_price: parseFloat(item.original_price?.toString() || item.discounted_price.toString()),
+        discounted_price: parseFloat(item.discounted_price.toString()),
+        ean: item.ean,
+        upc: item.upc,
         images: item.images?.map((img: StrapiImage) => {
           // Handle different URL formats from Strapi
           if (!img.url) return '/placeholder-product.jpg'
@@ -160,12 +201,30 @@ export class ProductsService {
             return `${this.STRAPI_URL}/uploads/${img.url}`
           }
         }) || ['/placeholder-product.jpg'],
-        created_at: item.createdAt,
         category: item.category ? {
           id: item.category.id,
-          name: item.category.name,
-          created_at: item.category.createdAt
+          name: item.category.name
         } : null,
+        slug: item.slug || '',
+        featured: item.featured || false,
+        delivery_option: item.delivery_option || null,
+        stock_quantity: item.stock_quantity || 0,
+        is_available: item.is_available || true,
+        sku: item.sku || '',
+        weight: item.weight,
+        weight_unit: item.weight_unit || null,
+        dimensions: item.dimensions,
+        low_stock_threshold: item.low_stock_threshold || 5,
+        allow_backorders: item.allow_backorders || false,
+        track_inventory: item.track_inventory || true,
+        averageRating: item.averageRating || 0,
+        reviewCount: item.reviewCount || 0,
+        product_type: item.product_type || 'physical',
+        requires_shipping: item.requires_shipping || true,
+        taxable: item.taxable || true,
+        tags: item.tags,
+        meta_description: item.meta_description,
+        meta_keywords: item.meta_keywords,
         customizations: [] // Will be handled separately if needed
       }))
 
