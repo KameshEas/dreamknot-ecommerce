@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import ProductGrid from '@/components/ProductGrid'
 import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
 interface Category {
   id: number
@@ -385,62 +386,7 @@ export default function ProductsPage() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-navy text-white py-12 mt-24">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <Image
-                  src="/logo.svg"
-                  alt="DreamKnot Logo"
-                  width={32}
-                  height={32}
-                />
-                <span className="text-xl font-playfair">DreamKnot</span>
-              </div>
-              <p className="text-gray-300 font-playfair text-sm leading-relaxed">
-                Making personalized gifts simple, beautiful, and meaningful.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-playfair font-semibold text-white mb-4">Products</h3>
-              <ul className="space-y-2 text-gray-300 font-playfair text-sm">
-                <li><Link href="/" className="hover:text-white transition-colors">Mugs</Link></li>
-                <li><Link href="/" className="hover:text-white transition-colors">T-Shirts</Link></li>
-                <li><Link href="/" className="hover:text-white transition-colors">Pillows</Link></li>
-                <li><Link href="/" className="hover:text-white transition-colors">Custom Items</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-playfair font-semibold text-white mb-4">Support</h3>
-              <ul className="space-y-2 text-gray-300 font-playfair text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Shipping</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Returns</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-playfair font-semibold text-white mb-4">Company</h3>
-              <ul className="space-y-2 text-gray-300 font-playfair text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Press</a></li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-700 pt-8 text-center">
-            <p className="text-gray-300 font-playfair text-sm">
-              &copy; 2025 DreamKnot. Made with love for personalized gifting.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

@@ -6,6 +6,7 @@ import Image from 'next/image'
 import ProductGrid from '@/components/ProductGrid'
 import FeaturedProducts from '@/components/FeaturedProducts'
 import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<string>('none')
@@ -282,8 +283,6 @@ export default function Home() {
         </div>
       </section>
 
-
-
       {/* Full Product Catalog */}
       <section className="py-20 bg-off-white">
         <div className="max-w-7xl mx-auto px-4">
@@ -358,7 +357,8 @@ export default function Home() {
         </div>
       </section>
 
-
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

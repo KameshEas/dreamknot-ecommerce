@@ -6,6 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
 interface CartItem {
   id: number
@@ -985,6 +986,9 @@ export default function CheckoutPage() {
           </div>
         </section>
       )}
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }
