@@ -44,6 +44,12 @@ export default function ProductsPage() {
     }
   }
 
+  const handleAdvancedFilter = (filterType: string, value: string) => {
+    // For advanced filters, we would need to implement proper filtering logic
+    // This is a placeholder for now
+    console.log(`Filter: ${filterType} = ${value}`)
+  }
+
   const handlePriceFilter = (range: string) => {
     if (range === priceRange) {
       setPriceRange('none')
@@ -146,6 +152,26 @@ export default function ProductsPage() {
             >
               ₹500 - ₹1000
             </button>
+            <button
+              onClick={() => handlePriceFilter('₹1000 - ₹2000')}
+              className={`px-6 py-3 rounded-full font-playfair text-sm transition-all duration-200 ${
+                priceRange === '₹1000 - ₹2000'
+                  ? 'bg-navy text-white shadow-lg'
+                  : 'bg-white text-navy border border-gray-200 hover:border-deep-gold hover:bg-gray-50'
+              }`}
+            >
+              ₹1000 - ₹2000
+            </button>
+            <button
+              onClick={() => handlePriceFilter('Over ₹2000')}
+              className={`px-6 py-3 rounded-full font-playfair text-sm transition-all duration-200 ${
+                priceRange === 'Over ₹2000'
+                  ? 'bg-navy text-white shadow-lg'
+                  : 'bg-white text-navy border border-gray-200 hover:border-deep-gold hover:bg-gray-50'
+              }`}
+            >
+              Over ₹2000
+            </button>
           </div>
 
           {/* Sort and View Options */}
@@ -204,6 +230,26 @@ export default function ProductsPage() {
               <h4 className="text-sm font-playfair font-semibold text-navy mb-3">Price Range</h4>
               <div className="grid grid-cols-2 gap-2">
                 <button
+                  onClick={() => handlePriceFilter('Under ₹500')}
+                  className={`px-4 py-2 rounded-lg font-playfair text-sm transition-all duration-200 ${
+                    priceRange === 'Under ₹500'
+                      ? 'bg-navy text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Under ₹500
+                </button>
+                <button
+                  onClick={() => handlePriceFilter('₹500 - ₹1000')}
+                  className={`px-4 py-2 rounded-lg font-playfair text-sm transition-all duration-200 ${
+                    priceRange === '₹500 - ₹1000'
+                      ? 'bg-navy text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  ₹500 - ₹1000
+                </button>
+                <button
                   onClick={() => handlePriceFilter('₹1000 - ₹2000')}
                   className={`px-4 py-2 rounded-lg font-playfair text-sm transition-all duration-200 ${
                     priceRange === '₹1000 - ₹2000'
@@ -222,6 +268,107 @@ export default function ProductsPage() {
                   }`}
                 >
                   Over ₹2000
+                </button>
+              </div>
+            </div>
+
+            {/* Product Types */}
+            <div className="mb-6">
+              <h4 className="text-sm font-playfair font-semibold text-navy mb-3">Product Type</h4>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  onClick={() => handleCategoryFilter('physical')}
+                  className={`px-4 py-2 rounded-lg font-playfair text-sm transition-all duration-200 ${
+                    selectedCategory === 'physical'
+                      ? 'bg-navy text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Physical
+                </button>
+                <button
+                  onClick={() => handleCategoryFilter('digital')}
+                  className={`px-4 py-2 rounded-lg font-playfair text-sm transition-all duration-200 ${
+                    selectedCategory === 'digital'
+                      ? 'bg-navy text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Digital
+                </button>
+                <button
+                  onClick={() => handleCategoryFilter('service')}
+                  className={`px-4 py-2 rounded-lg font-playfair text-sm transition-all duration-200 ${
+                    selectedCategory === 'service'
+                      ? 'bg-navy text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Service
+                </button>
+              </div>
+            </div>
+
+            {/* Stock Status */}
+            <div className="mb-6">
+              <h4 className="text-sm font-playfair font-semibold text-navy mb-3">Stock Status</h4>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => handleCategoryFilter('in-stock')}
+                  className={`px-4 py-2 rounded-lg font-playfair text-sm transition-all duration-200 ${
+                    selectedCategory === 'in-stock'
+                      ? 'bg-navy text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  In Stock
+                </button>
+                <button
+                  onClick={() => handleCategoryFilter('low-stock')}
+                  className={`px-4 py-2 rounded-lg font-playfair text-sm transition-all duration-200 ${
+                    selectedCategory === 'low-stock'
+                      ? 'bg-navy text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Low Stock
+                </button>
+              </div>
+            </div>
+
+            {/* Delivery Options */}
+            <div className="mb-6">
+              <h4 className="text-sm font-playfair font-semibold text-navy mb-3">Delivery</h4>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  onClick={() => handleCategoryFilter('two-day')}
+                  className={`px-4 py-2 rounded-lg font-playfair text-sm transition-all duration-200 ${
+                    selectedCategory === 'two-day'
+                      ? 'bg-navy text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  2-Day
+                </button>
+                <button
+                  onClick={() => handleCategoryFilter('standard')}
+                  className={`px-4 py-2 rounded-lg font-playfair text-sm transition-all duration-200 ${
+                    selectedCategory === 'standard'
+                      ? 'bg-navy text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Standard
+                </button>
+                <button
+                  onClick={() => handleCategoryFilter('express')}
+                  className={`px-4 py-2 rounded-lg font-playfair text-sm transition-all duration-200 ${
+                    selectedCategory === 'express'
+                      ? 'bg-navy text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Express
                 </button>
               </div>
             </div>

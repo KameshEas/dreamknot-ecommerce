@@ -7,11 +7,35 @@ interface Product {
   id: number
   title: string
   description: string
-  base_price: number
+  original_price: number
+  discounted_price: number
+  ean?: string
+  upc?: string
   images: string[]
   category: {
+    id: number
     name: string
   }
+  slug: string
+  featured: boolean
+  delivery_option: 'two_day' | 'standard' | 'express' | null
+  stock_quantity: number
+  is_available: boolean
+  sku: string
+  weight?: number
+  weight_unit: 'kg' | 'g' | 'lb' | 'oz' | null
+  dimensions?: string
+  low_stock_threshold: number
+  allow_backorders: boolean
+  track_inventory: boolean
+  averageRating: number
+  reviewCount: number
+  product_type: 'physical' | 'digital' | 'service'
+  requires_shipping: boolean
+  taxable: boolean
+  tags?: string
+  meta_description?: string
+  meta_keywords?: string
 }
 
 interface ProductsResponse {

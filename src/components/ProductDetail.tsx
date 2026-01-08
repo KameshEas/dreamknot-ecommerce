@@ -13,11 +13,35 @@ interface Product {
   id: number
   title: string
   description: string
-  base_price: number
+  original_price: number
+  discounted_price: number
+  ean?: string
+  upc?: string
   images: string[]
   category: {
+    id: number
     name: string
   } | null
+  slug: string
+  featured: boolean
+  delivery_option: 'two_day' | 'standard' | 'express' | null
+  stock_quantity: number
+  is_available: boolean
+  sku: string
+  weight?: number
+  weight_unit: 'kg' | 'g' | 'lb' | 'oz' | null
+  dimensions?: string
+  low_stock_threshold: number
+  allow_backorders: boolean
+  track_inventory: boolean
+  averageRating: number
+  reviewCount: number
+  product_type: 'physical' | 'digital' | 'service'
+  requires_shipping: boolean
+  taxable: boolean
+  tags?: string
+  meta_description?: string
+  meta_keywords?: string
   customizations: {
     id: number
     customization_type: string
@@ -190,11 +214,23 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
+                  {product.original_price && product.discounted_price && product.discounted_price < product.original_price && (
+                    <div className="flex items-center space-x-2 mb-2">
+                      <span className="text-lg font-playfair text-gray-500 line-through">
+                        ₹{product.original_price.toFixed(2)}
+                      </span>
+                      <span className="bg-deep-gold text-white px-2 py-1 text-xs font-playfair rounded">
+                        {Math.round(((product.original_price - product.discounted_price) / product.original_price) * 100)}% OFF
+                      </span>
+                    </div>
+                  )}
                   <span className="text-4xl font-playfair font-bold text-navy">
-                    ₹{(product.base_price || 0).toFixed(2)}
+                    ₹{(product.discounted_price || product.original_price || 0).toFixed(2)}
                   </span>
-                  <div className="space-y-1 mt-1">
-                    <p className="text-sm text-gray-500 font-playfair">Made to order</p>
+                  <div className="space-y-1 mt-2">
+                    <p className="text-sm text-gray-500 font-playfair">
+                      {product.product_type === 'digital' ? 'Instant delivery' : 'Made to order'}
+                    </p>
                     <p className="text-sm text-gray-500 font-playfair">Printed after approval</p>
                     <p className="text-sm text-gray-500 font-playfair">Handled with care</p>
                   </div>
@@ -215,10 +251,69 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                   </button>
                   <div className="text-center">
                     <div className="flex items-center space-x-2">
-                      <StarRating rating={4.5} readonly size="sm" />
-                      <span className="text-sm text-gray-600 font-playfair">(12 reviews)</span>
+                      <StarRating rating={product.averageRating || 4.5} readonly size="sm" />
+                      <span className="text-sm text-gray-600 font-playfair">({product.reviewCount || 12} reviews)</span>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Stock and Delivery Info */}
+              <div className="flex items-center justify-between pt-2">
+                <div className="flex items-center space-x-2">
+                  {product.track_inventory && (
+                    <span className={`px-2 py-1 text-xs font-playfair rounded-full ${
+                      product.stock_quantity <= product.low_stock_threshold 
+                        ? 'bg-red-100 text-red-700' 
+                        : product.stock_quantity === 0 && !product.allow_backorders
+                        ? 'bg-gray-100 text-gray-500'
+                        : 'bg-green-100 text-green-700'
+                    }`}>
+                      {product.stock_quantity === 0 
+                        ? (product.allow_backorders ? 'Backorder Available' : 'Out of Stock')
+                        : product.stock_quantity <= product.low_stock_threshold
+                        ? `${product.stock_quantity} in stock`
+                        : 'In Stock'
+                      }
+                    </span>
+                  )}
+                  {product.featured && (
+                    <span className="px-2 py-1 text-xs font-playfair bg-blue-100 text-blue-700 rounded-full">
+                      Featured
+                    </span>
+                  )}
+                  {product.sku && (
+                    <span className="px-2 py-1 text-xs font-playfair bg-gray-100 text-gray-600 rounded-full">
+                      SKU: {product.sku}
+                    </span>
+                  )}
+                </div>
+                {product.delivery_option && (
+                  <span className="text-xs text-gray-500 font-playfair">
+                    {product.delivery_option === 'two_day' && '2-day delivery'}
+                    {product.delivery_option === 'standard' && 'Standard delivery'}
+                    {product.delivery_option === 'express' && 'Express delivery'}
+                  </span>
+                )}
+              </div>
+
+              {/* Product Details */}
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+                {product.weight && (
+                  <div className="text-sm text-gray-600 font-playfair">
+                    <span className="font-semibold">Weight:</span> {product.weight} {product.weight_unit || 'g'}
+                  </div>
+                )}
+                {product.dimensions && (
+                  <div className="text-sm text-gray-600 font-playfair">
+                    <span className="font-semibold">Dimensions:</span> {product.dimensions}
+                  </div>
+                )}
+                <div className="text-sm text-gray-600 font-playfair">
+                  <span className="font-semibold">Type:</span> {product.product_type}
+                </div>
+                <div className="text-sm text-gray-600 font-playfair">
+                  <span className="font-semibold">Shipping:</span> {product.requires_shipping ? 'Required' : 'Not Required'}
                 </div>
               </div>
             </div>
@@ -392,7 +487,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               <div className="flex items-center justify-between py-4 border-t border-gray-200">
                 <span className="text-lg font-playfair text-gray-600">Total:</span>
                 <span className="text-2xl font-playfair font-bold text-navy">
-                  ₹{((product.base_price || 0) * quantity).toFixed(2)}
+                  ₹{((product.discounted_price || product.original_price || 0) * quantity).toFixed(2)}
                 </span>
               </div>
 

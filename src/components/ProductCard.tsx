@@ -10,11 +10,35 @@ interface Product {
   id: number
   title: string
   description: string
-  base_price: number
+  original_price: number
+  discounted_price: number
+  ean?: string
+  upc?: string
   images: string[]
   category: {
+    id: number
     name: string
   } | null
+  slug: string
+  featured: boolean
+  delivery_option: 'two_day' | 'standard' | 'express' | null
+  stock_quantity: number
+  is_available: boolean
+  sku: string
+  weight?: number
+  weight_unit: 'kg' | 'g' | 'lb' | 'oz' | null
+  dimensions?: string
+  low_stock_threshold: number
+  allow_backorders: boolean
+  track_inventory: boolean
+  averageRating: number
+  reviewCount: number
+  product_type: 'physical' | 'digital' | 'service'
+  requires_shipping: boolean
+  taxable: boolean
+  tags?: string
+  meta_description?: string
+  meta_keywords?: string
 }
 
 interface ProductCardProps {
@@ -142,12 +166,56 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           {/* Price with microcopy */}
           <div className="space-y-1">
+            {product.original_price && product.discounted_price && product.discounted_price < product.original_price && (
+              <div className="flex items-center space-x-2">
+                <span className="text-lg font-playfair text-gray-500 line-through">
+                  ₹{product.original_price.toFixed(2)}
+                </span>
+                <span className="bg-deep-gold text-white px-2 py-1 text-xs font-playfair rounded">
+                  {Math.round(((product.original_price - product.discounted_price) / product.original_price) * 100)}% OFF
+                </span>
+              </div>
+            )}
             <p className="text-xl font-playfair font-semibold text-navy">
-              ₹{(product.base_price || 0).toFixed(2)}
+              ₹{(product.discounted_price || product.original_price || 0).toFixed(2)}
             </p>
             <p className="text-xs text-gray-500 font-playfair">
-              Made after design approval
+              {product.product_type === 'digital' ? 'Instant delivery' : 'Made after design approval'}
             </p>
+          </div>
+
+          {/* Stock Status */}
+          <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center space-x-2">
+              {product.track_inventory && (
+                <span className={`px-2 py-1 text-xs font-playfair rounded-full ${
+                  product.stock_quantity <= product.low_stock_threshold 
+                    ? 'bg-red-100 text-red-700' 
+                    : product.stock_quantity === 0 && !product.allow_backorders
+                    ? 'bg-gray-100 text-gray-500'
+                    : 'bg-green-100 text-green-700'
+                }`}>
+                  {product.stock_quantity === 0 
+                    ? (product.allow_backorders ? 'Backorder Available' : 'Out of Stock')
+                    : product.stock_quantity <= product.low_stock_threshold
+                    ? `${product.stock_quantity} in stock`
+                    : 'In Stock'
+                  }
+                </span>
+              )}
+              {product.featured && (
+                <span className="px-2 py-1 text-xs font-playfair bg-blue-100 text-blue-700 rounded-full">
+                  Featured
+                </span>
+              )}
+            </div>
+            {product.delivery_option && (
+              <span className="text-xs text-gray-500 font-playfair">
+                {product.delivery_option === 'two_day' && '2-day delivery'}
+                {product.delivery_option === 'standard' && 'Standard delivery'}
+                {product.delivery_option === 'express' && 'Express delivery'}
+              </span>
+            )}
           </div>
 
           {/* Key benefits */}
@@ -164,6 +232,14 @@ export default function ProductCard({ product }: ProductCardProps) {
               </svg>
               Delivered in 24–48 hrs
             </div>
+            {product.requires_shipping && (
+              <div className="flex items-center text-xs text-gray-600 font-playfair">
+                <svg className="w-4 h-4 text-blue-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                Ships worldwide
+              </div>
+            )}
           </div>
         </div>
       </div>
