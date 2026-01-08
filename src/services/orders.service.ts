@@ -169,11 +169,7 @@ export class OrdersService {
     const cart = await prisma.cart.findFirst({
       where: { user_id: userId },
       include: {
-        cart_items: {
-          include: {
-            product: true
-          }
-        }
+        cart_items: true
       }
     })
 
@@ -181,9 +177,15 @@ export class OrdersService {
       throw new ConflictError('Cart is empty')
     }
 
+    // Get all products to calculate total
+    const productsResult = await ProductsService.getProducts({ limit: 1000 })
+    const products = productsResult.products
+
     // Calculate total
     const total_amount = cart.cart_items.reduce((sum, item) => {
-      return sum + (item.product.base_price * item.qty)
+      const product = products.find(p => p.id === item.product_id)
+      const price = product ? product.base_price : 0
+      return sum + (price * item.qty)
     }, 0)
 
     // Create order
@@ -204,13 +206,17 @@ export class OrdersService {
 
     // Create order items
     await prisma.orderItem.createMany({
-      data: cart.cart_items.map((item) => ({
-        order_id: order.id,
-        product_id: item.product_id,
-        customization_json: item.customization,
-        qty: item.qty,
-        price: item.product.base_price
-      }))
+      data: cart.cart_items.map((item) => {
+        const product = products.find(p => p.id === item.product_id)
+        const price = product ? product.base_price : 0
+        return {
+          order_id: order.id,
+          product_id: item.product_id,
+          customization_json: item.customization,
+          qty: item.qty,
+          price: price
+        }
+      })
     })
 
     // Clear cart
@@ -287,7 +293,7 @@ export class OrdersService {
   }
 
   static async getAllOrders(): Promise<any[]> {
-    // Get all orders with user and product information for admin view
+    // Get all orders with user information for admin view
     const orders = await prisma.order.findMany({
       include: {
         user: {
@@ -296,20 +302,29 @@ export class OrdersService {
             email: true
           }
         },
-        order_items: {
-          include: {
-            product: {
-              select: {
-                title: true
-              }
-            }
-          }
-        }
+        order_items: true
       },
       orderBy: { created_at: 'desc' }
     })
 
-    return orders
+    // Get all products to enrich order items
+    const productsResult = await ProductsService.getProducts({ limit: 1000 })
+    const products = productsResult.products
+
+    return orders.map((order) => {
+      const items = order.order_items.map((item) => {
+        const product = products.find(p => p.id === item.product_id)
+        return {
+          ...item,
+          product_title: product?.title || 'Product Unavailable'
+        }
+      })
+
+      return {
+        ...order,
+        items
+      }
+    })
   }
 
   private static async sendOrderEmails(
