@@ -61,9 +61,6 @@ model Product {
   // Relations
   category          Category              @relation(fields: [category_id], references: [id])
   customizations    ProductCustomization[]
-  cart_items        CartItem[]
-  order_items       OrderItem[]
-  reviews           Review[]
 
   @@map("products")
 }
@@ -113,13 +110,14 @@ model Cart {
 model CartItem {
   id             Int     @id @default(autoincrement())
   cart_id        Int
-  product_id     Int
+  product_id     Int     // References external Strapi product
   customization  String? // JSON string
   qty            Int     @default(1)
 
   // Relations
   cart    Cart    @relation(fields: [cart_id], references: [id])
-  product Product @relation(fields: [product_id], references: [id])
+  // Note: product_id references external Strapi products, not local Product model
+  // No foreign key constraint to avoid issues with external product references
 
   @@map("cart_items")
 }
@@ -149,14 +147,15 @@ model Order {
 model OrderItem {
   id                Int     @id @default(autoincrement())
   order_id          Int
-  product_id        Int
+  product_id        Int     // References external Strapi product
   customization_json String? // JSON string
   qty                Int
   price              Float   // Price at time of order
 
   // Relations
   order   Order   @relation(fields: [order_id], references: [id])
-  product Product @relation(fields: [product_id], references: [id])
+  // Note: product_id references external Strapi products, not local Product model
+  // No foreign key constraint to avoid issues with external product references
 
   @@map("order_items")
 }
@@ -164,7 +163,7 @@ model OrderItem {
 model Review {
   id         Int      @id @default(autoincrement())
   user_id    Int
-  product_id Int
+  product_id Int     // References external Strapi product
   rating     Int      // 1-5 stars
   title      String?
   comment    String?
@@ -174,7 +173,8 @@ model Review {
 
   // Relations
   user    User    @relation(fields: [user_id], references: [id])
-  product Product @relation(fields: [product_id], references: [id])
+  // Note: product_id references external Strapi products, not local Product model
+  // No foreign key constraint to avoid issues with external product references
 
   @@map("reviews")
 }
