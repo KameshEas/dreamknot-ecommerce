@@ -97,7 +97,7 @@ export class CartService {
         product: finalProduct,
         customization: item.customization,
         qty: item.qty,
-        price: finalProduct.discounted_price * item.qty
+        price: (finalProduct.discounted_price || finalProduct.original_price || 0) * item.qty
       }
     })
 

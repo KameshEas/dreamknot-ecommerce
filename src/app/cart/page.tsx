@@ -13,7 +13,8 @@ interface CartItem {
     id: number
     title: string
     images: string[]
-    base_price: number
+    discounted_price: number
+    original_price: number
   }
   customization: string | null
   qty: number
@@ -209,10 +210,10 @@ export default function CartPage() {
                       {/* Price */}
                       <div className="text-right lg:min-w-[150px]">
                         <div className="text-3xl font-playfair font-bold text-navy mb-1">
-                          ₹{item.price.toFixed(2)}
+                          ₹{(item.price || 0).toFixed(2)}
                         </div>
                         <div className="text-sm text-deep-gold font-playfair font-medium">
-                          ₹{(item.product.base_price).toFixed(2)} each
+                          ₹{((item.product?.discounted_price || item.product?.original_price) || 0).toFixed(2)} each
                         </div>
                       </div>
                     </div>
@@ -235,7 +236,7 @@ export default function CartPage() {
               <div className="space-y-6">
                 <div className="flex justify-between items-center py-3 border-b border-gray-100">
                   <span className="text-lg font-playfair text-dark-gray">Subtotal ({cart.items.length} item{cart.items.length !== 1 ? 's' : ''})</span>
-                  <span className="text-xl font-playfair font-semibold text-navy">₹{cart.total.toFixed(2)}</span>
+                  <span className="text-xl font-playfair font-semibold text-navy">₹{(cart.total || 0).toFixed(2)}</span>
                 </div>
 
                 <div className="flex justify-between items-center py-3 border-b border-gray-100">
@@ -246,7 +247,7 @@ export default function CartPage() {
                 <div className="bg-gradient-subtle rounded-2xl p-6 border border-deep-gold/20">
                   <div className="flex justify-between items-center">
                     <span className="text-2xl font-playfair font-bold text-navy">Total</span>
-                    <span className="text-4xl font-playfair font-bold text-navy">₹{cart.total.toFixed(2)}</span>
+                    <span className="text-4xl font-playfair font-bold text-navy">₹{(cart.total || 0).toFixed(2)}</span>
                   </div>
                   <p className="text-sm text-deep-gold font-playfair mt-2">Inclusive of all taxes</p>
                 </div>
