@@ -240,12 +240,16 @@ export default function CheckoutPage() {
     setProcessing(true)
 
     try {
-      // Create RazorPay order
+      // Create RazorPay order with discount information
       const orderResponse = await fetch('/api/orders/create-payment-order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        body: JSON.stringify({
+          discount_code: appliedDiscount?.code,
+          discount_amount: appliedDiscount?.amount
+        })
       })
 
       if (!orderResponse.ok) {

@@ -86,7 +86,9 @@ export class OrdersService {
     key_secret: process.env.RAZORPAY_KEY_SECRET!
   })
 
-  static async createPaymentOrder(userId: number): Promise<PaymentOrderResult> {
+  static async createPaymentOrder(userId: number, discountCode?: string, discountAmount?: number): Promise<PaymentOrderResult> {
+    console.log('Creating payment order:', { userId, discountCode, discountAmount })
+
     // Get user's cart
     const cart = await prisma.cart.findFirst({
       where: { user_id: userId },
@@ -104,11 +106,18 @@ export class OrdersService {
     const products = productsResult.products
 
     // Calculate total
-    const total_amount = cart.cart_items.reduce((sum, item) => {
+    const subtotal = cart.cart_items.reduce((sum, item) => {
       const product = products.find(p => p.id === item.product_id)
       const price = product ? product.discounted_price : 0
       return sum + (price * item.qty)
     }, 0)
+
+    console.log('Payment order calculation:', { subtotal, discountCode, discountAmount })
+
+    // Apply discount if provided
+    const total_amount = discountAmount ? Math.max(0, subtotal - discountAmount) : subtotal
+
+    console.log('Final payment amount:', { subtotal, discountAmount, total_amount })
 
     const amount_in_paise = Math.round(total_amount * 100) // RazorPay expects amount in paise
 
