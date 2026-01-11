@@ -191,13 +191,21 @@ export class OrdersService {
     }
 
     // Get all products to calculate total
-    const productsResult = await ProductsService.getProducts({ limit: 1000 })
-    const products = productsResult.products
+    let products: any[] = []
+    try {
+      const productsResult = await ProductsService.getProducts({ limit: 1000 })
+      products = productsResult.products || []
+      console.log(`Found ${products.length} products in database`)
+    } catch (error) {
+      console.error('Failed to fetch products:', error)
+      // Continue with empty products array - will handle gracefully below
+    }
 
     // Calculate subtotal
     const subtotal = cart.cart_items.reduce((sum, item) => {
       const product = products.find(p => p.id === item.product_id)
       const price = product ? product.discounted_price : 0
+      console.log(`Cart item ${item.product_id}: product found = ${!!product}, price = ${price}`)
       return sum + (price * item.qty)
     }, 0)
 
@@ -220,20 +228,38 @@ export class OrdersService {
       }
     })
 
-    // Create order items
-    await prisma.orderItem.createMany({
-      data: cart.cart_items.map((item) => {
+    // Create order items - only for products that exist
+    const validOrderItems = cart.cart_items
+      .map((item) => {
         const product = products.find(p => p.id === item.product_id)
-        const price = product ? product.discounted_price : 0
+        if (!product) {
+          console.warn(`Product ${item.product_id} not found, skipping order item`)
+          return null
+        }
         return {
           order_id: order.id,
           product_id: item.product_id,
           customization_json: item.customization,
           qty: item.qty,
-          price: price
+          price: product.discounted_price
         }
       })
-    })
+      .filter((item) => item !== null)
+
+    if (validOrderItems.length > 0) {
+      await prisma.orderItem.createMany({
+        data: validOrderItems
+      })
+    }
+
+    // If no valid items, cancel the order
+    if (validOrderItems.length === 0) {
+      await prisma.order.update({
+        where: { id: order.id },
+        data: { order_status: 'cancelled' }
+      })
+      throw new ConflictError('No valid products found in cart')
+    }
 
     // Clear cart
     await prisma.cartItem.deleteMany({
