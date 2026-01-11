@@ -138,7 +138,9 @@ export class OrdersService {
 
   static async verifyPaymentAndCreateOrder(
     userId: number,
-    data: PaymentVerificationData
+    data: PaymentVerificationData,
+    discountCode?: string,
+    discountAmount?: number
   ): Promise<OrderResult> {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, shipping_address, billing_address } = data
 
@@ -161,7 +163,7 @@ export class OrdersService {
     return this.createOrderFromCart(userId, shipping_address, billing_address, {
       razorpay_order_id,
       razorpay_payment_id
-    })
+    }, discountCode, discountAmount)
   }
 
   static async createOrder(userId: number, data: CreateOrderData): Promise<OrderResult> {
@@ -172,7 +174,9 @@ export class OrdersService {
     userId: number,
     shipping_address: ShippingAddress,
     billing_address: BillingAddress,
-    paymentData?: { razorpay_order_id: string; razorpay_payment_id: string }
+    paymentData?: { razorpay_order_id: string; razorpay_payment_id: string },
+    discountCode?: string,
+    discountAmount?: number
   ): Promise<OrderResult> {
     // Get user's cart
     const cart = await prisma.cart.findFirst({
@@ -190,12 +194,15 @@ export class OrdersService {
     const productsResult = await ProductsService.getProducts({ limit: 1000 })
     const products = productsResult.products
 
-    // Calculate total
-    const total_amount = cart.cart_items.reduce((sum, item) => {
+    // Calculate subtotal
+    const subtotal = cart.cart_items.reduce((sum, item) => {
       const product = products.find(p => p.id === item.product_id)
       const price = product ? product.discounted_price : 0
       return sum + (price * item.qty)
     }, 0)
+
+    // Apply discount if provided
+    const total_amount = discountAmount ? Math.max(0, subtotal - discountAmount) : subtotal
 
     // Create order
     const order = await prisma.order.create({
@@ -234,7 +241,7 @@ export class OrdersService {
     })
 
     // Send emails asynchronously
-    this.sendOrderEmails(order.id, userId, shipping_address, billing_address, cart.cart_items)
+    this.sendOrderEmails(order.id, userId, shipping_address, billing_address, cart.cart_items, total_amount, discountCode, discountAmount)
 
     return {
       id: order.id,
@@ -306,12 +313,9 @@ export class OrdersService {
         }
       })
 
-      // Recalculate total based on current product prices
-      const total_amount = items.reduce((sum, item) => sum + item.price, 0)
-
       return {
         id: order.id,
-        total_amount,
+        total_amount: order.total_amount, // Use stored discounted total
         order_status: order.order_status,
         payment_status: order.payment_status,
         shipping_address: JSON.parse(order.shipping_address),
@@ -362,7 +366,10 @@ export class OrdersService {
     userId: number,
     shipping_address: ShippingAddress,
     billing_address: BillingAddress,
-    cartItems: any[]
+    cartItems: any[],
+    totalAmount: number,
+    discountCode?: string,
+    discountAmount?: number
   ): Promise<void> {
     try {
       // Get user info
@@ -381,10 +388,9 @@ export class OrdersService {
         orderId,
         customerName: user.name,
         customerEmail: user.email,
-        totalAmount: cartItems.reduce((sum, item) => {
-          const product = products.find(p => p.id === item.product_id)
-          return sum + ((product?.discounted_price || 0) * item.qty)
-        }, 0),
+        totalAmount,
+        discountCode,
+        discountAmount,
         shippingAddress: {
           name: shipping_address.name,
           address_line: shipping_address.address_line_1 + (shipping_address.address_line_2 ? '\n' + shipping_address.address_line_2 : ''),

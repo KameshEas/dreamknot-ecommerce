@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Header from '@/components/Header'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface OrderItem {
   id: number
@@ -41,21 +42,46 @@ export default function OrderConfirmationPage() {
 
   const fetchOrder = async () => {
     try {
-      // For now, we'll simulate getting order details
-      // In a real app, you'd have an API endpoint to fetch order by ID
-      // Since we just created it, we'll show a success message
+      // First, try to get order data from localStorage (set after payment)
+      const storedOrder = localStorage.getItem('lastOrder')
+      if (storedOrder) {
+        const parsedOrder = JSON.parse(storedOrder)
+        if (parsedOrder.id === parseInt(orderId)) {
+          setOrder(parsedOrder)
+          setLoading(false)
+          return
+        }
+      }
 
+      // If not in localStorage, fetch from API
+      const response = await fetch(`/api/user/orders/${orderId}`)
+      if (response.ok) {
+        const data = await response.json()
+        setOrder(data.order)
+      } else {
+        // Fallback to basic order info if detailed fetch fails
+        setOrder({
+          id: parseInt(orderId),
+          total_amount: 0,
+          order_status: 'processing',
+          shipping_address: '{}',
+          billing_address: '{}',
+          created_at: new Date().toISOString(),
+          order_items: []
+        })
+      }
+    } catch (error) {
+      console.error('Fetch order error:', error)
+      // Fallback to basic order info
       setOrder({
         id: parseInt(orderId),
-        total_amount: 0, // Would be fetched from API
+        total_amount: 0,
         order_status: 'processing',
         shipping_address: '{}',
         billing_address: '{}',
         created_at: new Date().toISOString(),
         order_items: []
       })
-    } catch (error) {
-      console.error('Fetch order error:', error)
     } finally {
       setLoading(false)
     }
@@ -102,8 +128,53 @@ export default function OrderConfirmationPage() {
               <p className="font-playfair text-dark-gray">
                 <span className="font-bold">Order Date:</span> {new Date(order?.created_at || '').toLocaleDateString()}
               </p>
+              <p className="font-playfair text-dark-gray">
+                <span className="font-bold">Total Amount:</span> ₹{order?.total_amount.toFixed(2)}
+              </p>
             </div>
           </div>
+
+          {/* Order Items */}
+          {order?.order_items && order.order_items.length > 0 && (
+            <div className="mb-8">
+              <h3 className="text-2xl font-playfair font-bold text-navy mb-4">Your Items</h3>
+              <div className="space-y-4">
+                {order.order_items.map((item) => (
+                  <div key={item.id} className="flex items-center justify-between p-4 bg-off-white rounded-xl">
+                    <div className="flex items-center space-x-4">
+                      <div className="relative w-16 h-16 rounded-lg overflow-hidden">
+                        <Image
+                          src={item.product.images[0] || '/next.svg'}
+                          alt={item.product.title}
+                          fill
+                          className="object-cover"
+                          sizes="64px"
+                        />
+                      </div>
+                      <div className="text-left">
+                        <h4 className="font-playfair font-bold text-navy">{item.product.title}</h4>
+                        <p className="text-sm text-gray-600 font-playfair">Quantity: {item.qty}</p>
+                        {item.customization_json && (
+                          <div className="mt-2">
+                            <p className="text-xs text-gray-500 font-playfair mb-1">Customization:</p>
+                            <div className="bg-white px-3 py-1 rounded text-xs text-gray-800 max-w-md">
+                              {JSON.parse(item.customization_json).text || 'Custom design'}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-gray-600 font-playfair">
+                        ₹{item.price.toFixed(2)} × {item.qty}
+                      </div>
+                      <p className="font-playfair font-bold text-navy">₹{(item.price * item.qty).toFixed(2)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="text-center space-y-4">
             <p className="text-lg font-playfair text-dark-gray">

@@ -79,35 +79,11 @@ declare global {
   }
 }
 
-interface OrderItem {
-  id: number
-  product: {
-    id: number
-    title: string
-    images: string[]
-  }
-  customization: string | null
-  qty: number
-  price: number
-}
 
-interface Order {
-  id: number
-  total_amount: number
-  order_status: string
-  shipping_address: string
-  billing_address: string
-  created_at: string
-  order_items: OrderItem[]
-}
-
-type CheckoutStep = 'cart' | 'checkout' | 'confirmation'
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const [currentStep, setCurrentStep] = useState<CheckoutStep>('checkout')
   const [cart, setCart] = useState<Cart>({ id: null, items: [], total: 0 })
-  const [order, setOrder] = useState<Order | null>(null)
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState(false)
   const [shippingAddress, setShippingAddress] = useState<Address>({
@@ -289,37 +265,20 @@ export default function CheckoutPage() {
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
                 shipping_address: shippingAddress,
-                billing_address: billingAddress
+                billing_address: billingAddress,
+                discount_code: appliedDiscount?.code,
+                discount_amount: appliedDiscount?.amount
               })
             })
 
             if (verifyResponse.ok) {
               const data = await verifyResponse.json()
 
-              // Create order object for confirmation step
-              const confirmedOrder: Order = {
-                id: data.order.id,
-                total_amount: cart.total,
-                order_status: 'processing',
-                shipping_address: JSON.stringify(shippingAddress),
-                billing_address: JSON.stringify(billingAddress),
-                created_at: new Date().toISOString(),
-                order_items: cart.items.map(item => ({
-                  id: item.id,
-                  product: {
-                    id: item.product.id,
-                    title: item.product.title,
-                    images: item.product.images
-                  },
-                  customization: item.customization,
-                  qty: item.qty,
-                  price: item.price
-                }))
-              }
+              // Store order data in localStorage for confirmation page
+              localStorage.setItem('lastOrder', JSON.stringify(data.order))
 
-              setOrder(confirmedOrder)
-              setCurrentStep('confirmation')
-              setProcessing(false)
+              // Redirect to order confirmation page
+              router.push(`/order-confirmation/${data.order.id}`)
             } else {
               const error = await verifyResponse.json()
               toast.error(`Payment verification failed: ${error.error}`)
@@ -400,22 +359,18 @@ export default function CheckoutPage() {
               <span>Cart</span>
             </div>
             <div className="w-8 h-px bg-gray-300"></div>
-            <div className={`flex items-center space-x-2 ${currentStep === 'checkout' || currentStep === 'confirmation' ? 'text-navy' : ''}`}>
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                currentStep === 'checkout' || currentStep === 'confirmation' ? 'bg-navy text-white' : 'bg-gray-200'
-              }`}>
-                {currentStep === 'checkout' || currentStep === 'confirmation' ? '✓' : '2'}
+            <div className="flex items-center space-x-2 text-navy">
+              <div className="w-6 h-6 bg-navy rounded-full flex items-center justify-center text-xs font-bold text-white">
+                ✓
               </div>
-              <span className={currentStep === 'checkout' || currentStep === 'confirmation' ? 'font-semibold' : ''}>Checkout</span>
+              <span className="font-semibold">Checkout</span>
             </div>
             <div className="w-8 h-px bg-gray-300"></div>
-            <div className={`flex items-center space-x-2 ${currentStep === 'confirmation' ? 'text-navy' : ''}`}>
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                currentStep === 'confirmation' ? 'bg-deep-gold text-navy' : 'bg-gray-200'
-              }`}>
-                {currentStep === 'confirmation' ? '✓' : '3'}
+            <div className="flex items-center space-x-2">
+              <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-xs font-bold">
+                3
               </div>
-              <span className={currentStep === 'confirmation' ? 'font-semibold' : ''}>Confirmation</span>
+              <span>Confirmation</span>
             </div>
           </div>
         </div>
@@ -863,113 +818,9 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      {/* Order Confirmation Step */}
-      {currentStep === 'confirmation' && order && (
-        <div className="max-w-4xl mx-auto px-4 pb-20">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8">
-              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
 
-            <h1 className="text-4xl font-playfair text-navy mb-4">
-              Order Confirmed!
-            </h1>
-
-            <p className="text-2xl font-playfair text-gray-600 mb-8">
-              {"Thank you for your order. We're excited to create your personalized gifts!"}
-            </p>
-
-            <div className="bg-deep-gold/5 rounded-2xl p-8 mb-8 max-w-2xl mx-auto">
-              <h2 className="text-2xl font-playfair font-bold text-navy mb-6">Order Details</h2>
-              <div className="text-left space-y-3">
-                <p className="font-playfair text-gray-700">
-                  <span className="font-bold">Order Number:</span> #{order.id.toString().padStart(6, '0')}
-                </p>
-                <p className="font-playfair text-gray-700">
-                  <span className="font-bold">Status:</span> {order.order_status.replace('_', ' ')}
-                </p>
-                <p className="font-playfair text-gray-700">
-                  <span className="font-bold">Order Date:</span> {new Date(order.created_at).toLocaleDateString()}
-                </p>
-                <p className="font-playfair text-gray-700">
-                  <span className="font-bold">Total:</span> ₹{order.total_amount.toFixed(2)}
-                </p>
-              </div>
-            </div>
-
-            {/* Order Items */}
-            <div className="mb-8">
-              <h3 className="text-xl font-playfair font-bold text-navy mb-4">Your Items</h3>
-              <div className="space-y-4">
-                {order.order_items.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between p-4 bg-off-white rounded-xl">
-                    <div className="flex items-center space-x-4">
-                      <div className="relative w-16 h-16 rounded-lg overflow-hidden">
-                        <Image
-                          src={item.product.images[0] || '/next.svg'}
-                          alt={item.product.title}
-                          fill
-                          className="object-cover"
-                          sizes="64px"
-                        />
-                      </div>
-                      <div className="text-left">
-                        <h4 className="font-playfair font-bold text-navy">{item.product.title}</h4>
-                        <p className="text-sm text-gray-600 font-playfair">Quantity: {item.qty}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-playfair font-bold text-navy">₹{item.price.toFixed(2)}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="text-center space-y-6">
-              <p className="text-lg font-playfair text-gray-600">
-                {"We'll send you an email confirmation and updates on your order status."}
-              </p>
-
-              {/* Post-Purchase Momentum */}
-              <div className="bg-navy/5 rounded-2xl p-6 max-w-2xl mx-auto">
-                <p className="text-base font-playfair text-gray-700 mb-4">
-                  💝 While we prepare your gift, want to create another special surprise?
-                </p>
-                <Link
-                  href="/gift-finder"
-                  className="inline-flex items-center px-6 py-3 bg-deep-gold text-navy font-playfair font-semibold rounded-lg hover:opacity-90 transition-colors"
-                >
-                  Find Another Perfect Gift
-                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H7" />
-                  </svg>
-                </Link>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link
-                  href="/"
-                  className="px-8 py-4 bg-navy text-white font-playfair font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Continue Shopping
-                </Link>
-                <Link
-                  href="/orders"
-                  className="px-8 py-4 border-2 border-navy text-navy font-playfair font-semibold rounded-lg hover:bg-navy hover:text-white transition-colors"
-                >
-                  View All Orders
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Founders' Promise - Only show if not on confirmation step */}
-      {currentStep !== 'confirmation' && (
+      {/* Founders' Promise */}
+      {(
         <section className="py-16 bg-white border-t border-gray-100">
           <div className="max-w-4xl mx-auto px-4 text-center">
             <h2 className="text-3xl lg:text-4xl font-playfair text-navy mb-6">

@@ -14,6 +14,8 @@ interface OrderEmailData {
   customerName: string
   customerEmail: string
   totalAmount: number
+  discountCode?: string
+  discountAmount?: number
   shippingAddress: Address
   billingAddress: Address
   items: Array<{
@@ -27,15 +29,17 @@ interface OrderEmailData {
 // Create transporter with Gmail SMTP (for demo purposes)
 // In production, use a service like SendGrid, Mailgun, or AWS SES
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: process.env.EMAIL_SMTP_HOST || 'smtp.gmail.com',
+  port: parseInt(process.env.EMAIL_SMTP_PORT || '587'),
+  secure: false, // true for 465, false for other ports
   auth: {
-    user: process.env.EMAIL_USER || 'your-email@gmail.com',
-    pass: process.env.EMAIL_PASS || 'your-app-password'
+    user: process.env.EMAIL_SMTP_USER || process.env.EMAIL_USER,
+    pass: process.env.EMAIL_SMTP_PASS || process.env.EMAIL_PASS
   }
 })
 
 export async function sendOrderConfirmationEmail(data: OrderEmailData) {
-  const { orderId, customerName, customerEmail, totalAmount, shippingAddress, items } = data
+  const { orderId, customerName, customerEmail, totalAmount, discountCode, discountAmount, shippingAddress, items } = data
 
   const orderItemsHtml = items.map(item => `
     <tr>
@@ -44,7 +48,7 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData) {
         ${item.customization_json ? `<br><small style="color: #666;">Customization: ${JSON.parse(item.customization_json).text || 'Custom'}</small>` : ''}
       </td>
       <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${item.qty}</td>
-      <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$${item.price.toFixed(2)}</td>
+      <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">₹${item.price.toFixed(2)}</td>
     </tr>
   `).join('')
 
@@ -75,7 +79,8 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData) {
             <h3 style="color: #19325C; border-bottom: 2px solid #C1A86F; padding-bottom: 10px;">Order Details</h3>
             <p style="margin: 10px 0;"><strong>Order Number:</strong> #${orderId.toString().padStart(6, '0')}</p>
             <p style="margin: 10px 0;"><strong>Order Date:</strong> ${new Date().toLocaleDateString()}</p>
-            <p style="margin: 10px 0;"><strong>Total Amount:</strong> $${totalAmount.toFixed(2)}</p>
+            ${discountCode ? `<p style="margin: 10px 0;"><strong>Discount Applied:</strong> ${discountCode} (-₹${discountAmount?.toFixed(2)})</p>` : ''}
+            <p style="margin: 10px 0;"><strong>Total Amount:</strong> ₹${totalAmount.toFixed(2)}</p>
           </div>
 
           <!-- Order Items -->
@@ -91,9 +96,19 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData) {
               </thead>
               <tbody>
                 ${orderItemsHtml}
+                ${discountCode ? `
+                <tr style="background-color: #f0f8f0;">
+                  <td colspan="2" style="padding: 10px; text-align: right; font-weight: bold;">Subtotal:</td>
+                  <td style="padding: 10px; text-align: right;">₹${(totalAmount + (discountAmount || 0)).toFixed(2)}</td>
+                </tr>
+                <tr style="background-color: #fff0f0;">
+                  <td colspan="2" style="padding: 10px; text-align: right; font-weight: bold; color: #d32f2f;">Discount (${discountCode}):</td>
+                  <td style="padding: 10px; text-align: right; color: #d32f2f;">-₹${discountAmount?.toFixed(2)}</td>
+                </tr>
+                ` : ''}
                 <tr style="background-color: #f8f9fa; font-weight: bold;">
                   <td colspan="2" style="padding: 15px; text-align: right; border-top: 2px solid #C1A86F;">Total:</td>
-                  <td style="padding: 15px; text-align: right; border-top: 2px solid #C1A86F; color: #19325C;">$${totalAmount.toFixed(2)}</td>
+                  <td style="padding: 15px; text-align: right; border-top: 2px solid #C1A86F; color: #19325C;">₹${totalAmount.toFixed(2)}</td>
                 </tr>
               </tbody>
             </table>
@@ -158,7 +173,7 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData) {
 }
 
 export async function sendAdminOrderNotification(data: OrderEmailData) {
-  const { orderId, customerName, customerEmail, totalAmount, items } = data
+  const { orderId, customerName, customerEmail, totalAmount, discountCode, discountAmount, items } = data
 
   const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER
 
@@ -169,12 +184,13 @@ export async function sendAdminOrderNotification(data: OrderEmailData) {
       <h2>New Order Received - DreamKnot</h2>
       <p><strong>Order ID:</strong> #${orderId.toString().padStart(6, '0')}</p>
       <p><strong>Customer:</strong> ${customerName} (${customerEmail})</p>
-      <p><strong>Total:</strong> $${totalAmount.toFixed(2)}</p>
+      ${discountCode ? `<p><strong>Discount Applied:</strong> ${discountCode} (-₹${discountAmount?.toFixed(2)})</p>` : ''}
+      <p><strong>Total:</strong> ₹${totalAmount.toFixed(2)}</p>
       <p><strong>Items:</strong> ${items.length}</p>
 
       <h3>Order Items:</h3>
       <ul>
-        ${items.map(item => `<li>${item.product.title} - Qty: ${item.qty} - $${item.price.toFixed(2)}</li>`).join('')}
+        ${items.map(item => `<li>${item.product.title} - Qty: ${item.qty} - ₹${item.price.toFixed(2)}</li>`).join('')}
       </ul>
 
       <p>Please process this order in the admin dashboard.</p>
